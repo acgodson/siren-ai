@@ -274,7 +274,7 @@ Benefit form user-contributed routes and noise data.`,
                 </Box>
 
                 <Box maxW={["100%", "100%", "50%"]} p={6}>
-                  <Image src={`/record.svg`} />
+                  <Image src={`/${x.img}`} />
                 </Box>
               </Flex>
             ))}
