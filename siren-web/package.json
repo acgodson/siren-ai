@@ -1,0 +1,46 @@
+{
+  "name": "siren-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --experimental-https ",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.2.5",
+    "react": "^18",
+    "react-dom": "^18",
+    "tone": "^15.0.4",
+    "@chakra-ui/next-js": "^2.2.0",
+    "@chakra-ui/react": "^2.8.2",
+    "@dicebear/collection": "^9.0.1",
+    "@dicebear/core": "^9.0.1",
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
+    "@privy-io/react-auth": "^1.66.2",
+    "@privy-io/wagmi": "^0.2.12",
+    "framer-motion": "^11.3.28",
+    "wagmi": "^2.12.5",
+    "uuid": "^10.0.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.428.0",
+    "firebase-admin": "^12.2.0",
+    "@lighthouse-web3/sdk": "^0.3.2",
+    "@tanstack/react-query": "^5.51.15",
+    "gpt-tokenizer": "^2.1.2",
+    "tailwind-merge": "^2.5.2",
+    "colorette": "^2.0.20",
+    "viem": "^2.19.7",
+    "json-colorizer": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
