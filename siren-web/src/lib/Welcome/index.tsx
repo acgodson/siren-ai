@@ -126,7 +126,7 @@ Benefit form user-contributed routes and noise data.`,
                     bgGradient: "linear(to-r, #17101C, #D82B3C)",
                   }}
                   px={[3, 3, 12]}
-                  onClick={handleLogin}
+                  // onClick={handleLogin}
                   rightIcon={<img src="/measuring.png" alt="measuring" />}
                 >
                   Start Measuring
@@ -266,7 +266,7 @@ Benefit form user-contributed routes and noise data.`,
                       bgGradient: "linear(to-r, #17101C, #D82B3C)",
                     }}
                     w="fit-content"
-                    onClick={handleLogin}
+                    // onClick={handleLogin}
                     rightIcon={<img src={`/${x.icon}`} alt="measuring" />}
                   >
                     {x.action}
