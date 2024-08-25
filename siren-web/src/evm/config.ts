@@ -10,7 +10,7 @@ export const privyConfig = {
   appearance: {
     theme: "light",
     accentColor: "#676FFF",
-    logo: `https://www.zerocom.xyz/vercel.svg`,
+    logo: `https://siren-ai.vercel.app/vercel.png`,
   },
   embeddedWallets: {
     createOnLogin: "all-users",

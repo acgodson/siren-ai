@@ -1,3 +1,4 @@
+"use client";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
@@ -25,6 +26,7 @@ const NavGroup = ({
   const initialActiveNav = propNavs.find((nav) => nav.isActive) || propNavs[0];
   const [active, setActive] = useState<Nav>(initialActiveNav);
   const [navs, setNavs] = useState<Nav[]>(propNavs);
+  const host = process.env.NEXT_PUBLIC_HOST;
 
   const moveSelectedNavToTop = (idx: number) => {
     const newNavs = [...propNavs];
@@ -46,7 +48,7 @@ const NavGroup = ({
           style={{
             transformStyle: "preserve-3d",
           }}
-          href={nav.href}
+          href={nav.href === "/" ? `https://app.${host}` : nav.href}
         >
           {active.value === nav.value && (
             <motion.div

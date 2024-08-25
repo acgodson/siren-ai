@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
-import { Box, Button, Image } from "@chakra-ui/react";
+import { Box, Button, Image, Text } from "@chakra-ui/react";
 import NavGroup from "../molecules/nav-group";
 
 import { useAccount } from "wagmi";
 import { useEthContext } from "@/evm/EthContext";
+import { shortenAddress } from "@/utils";
 
 const Header = ({ className }: { className?: string }) => {
+  const { handleLogin } = useEthContext();
   const [segment, setSegments] = useState<number>(0);
   const { address } = useAccount();
   const { toggleAccountModal } = useEthContext();
@@ -72,9 +74,28 @@ const Header = ({ className }: { className?: string }) => {
               bgGradient: "linear(to-r, #17101C, #D82B3C)",
             }}
             className="py-5 cursor-pointer"
-            onClick={toggleAccountModal}
+            onClick={handleLogin}
           >
             Login
+          </Button>
+        )}
+
+        {address && (
+          <Button
+            h="45px"
+            px={8}
+            fontSize={"md"}
+            borderRadius={"30px"}
+            bgGradient="linear(to-r, #D82B3C, #17101C)"
+            color="white"
+            _hover={{
+              bgGradient: "linear(to-r, #17101C, #D82B3C)",
+            }}
+            className="py-5 cursor-pointer"
+            onClick={toggleAccountModal}
+            rightIcon={<Text>0.00</Text>}
+          >
+            {shortenAddress(address)}
           </Button>
         )}
       </Box>

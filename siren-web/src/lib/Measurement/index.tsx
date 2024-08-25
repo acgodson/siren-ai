@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Box } from "@chakra-ui/react";
+import { Box, VStack , Text} from "@chakra-ui/react";
 import AppWrapper from "@/components/template/app-wrapper";
 
 import { usePrivy } from "@privy-io/react-auth";
+import DecibelMeter from "@/components/organisms/NoiseDetector";
 
 function Dashboard() {
   const { user } = usePrivy();
@@ -19,7 +20,9 @@ function Dashboard() {
   return (
     <>
       <AppWrapper>
-        <Box>Let's Measure</Box>
+        <VStack mt={12}  w="100%" justifyContent={"center"} alignItems={"center"}>
+          <DecibelMeter />
+        </VStack>
       </AppWrapper>
     </>
   );

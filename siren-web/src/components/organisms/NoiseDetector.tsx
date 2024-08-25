@@ -13,10 +13,10 @@ import {
 
 const DecibelMeter = () => {
   const [currentReading, setCurrentReading] = useState(40);
-  const [max, setMax] = useState(46);
-  const [min, setMin] = useState(39);
-  const [avg, setAvg] = useState(41);
-  const [time, setTime] = useState("00:00:12");
+  const [max, setMax] = useState(0);
+  const [min, setMin] = useState(0);
+  const [avg, setAvg] = useState(0);
+  const [time, setTime] = useState("00:00:00");
   const [isRecording, setIsRecording] = useState(false);
 
   const segments = 36; // Number of blocks around the circle
@@ -29,21 +29,28 @@ const DecibelMeter = () => {
 
   return (
     <>
+      <Box w="100%">
+        <Text
+          textAlign={"center"}
+          fontSize={["xl", "2xl", "3xl"]}
+          fontWeight="bold"
+        >
+          {isRecording ? "Measuring Decibels" : "Noise Measurement"}
+        </Text>
+      </Box>
+
       <VStack
-        mt={32}
+        mt={8}
         spacing={4}
         align="center"
         bg="white"
         p={6}
+        w="100%"
         borderRadius="lg"
         shadow="md"
-        maxW="sm"
+        maxW="md"
         mx="auto"
       >
-        <Text fontSize="2xl" fontWeight="bold">
-          Measuring Decibels
-        </Text>
-
         {/* Details above the circle */}
         <HStack justify="space-between" w="100%" px={6}>
           <VStack align="flex-start">
@@ -56,7 +63,7 @@ const DecibelMeter = () => {
           </VStack>
         </HStack>
 
-        <Box mt={-8} w="210px" h="220px" position={"relative"}>
+        <Box mt={-8} w="210px" h="210px" position={"relative"}>
           <Box
             position={"relative"}
             rounded={"full"}
@@ -65,43 +72,85 @@ const DecibelMeter = () => {
             h="fit-content"
             w="fit-content"
           >
-            <Box p={"2.5px"}>
-              <img src="/volumeframe.svg" alt="base-frame" />
-            </Box>
-
-            <Box p={"2.5px"} left={0} top={0} zIndex={1} position={"absolute"}>
-              <img src="/volumebase.svg" alt="base-frame" />
+            <Box p={0.5} mt={0}>
+              <img src="/meter.svg" alt="base-frame" />
             </Box>
 
             <Box
+              p={"2.5px"}
+              mt={"0.2px"}
+              left={0}
+              top={0}
+              zIndex={1}
+              position={"absolute"}
+            >
+              <img src="/volumebase.svg" alt="base-frame" />
+            </Box>
+
+            {/* <Box
               opacity={1}
               zIndex={1}
               // px={"3.2px"}
               position={"absolute"}
-              left={"-6.5px"}
-              top={"-6.5px"}
+              mt={'0.2px'}
+              right={"-8.15px"}
+              top={-0.5}
             >
               <CircularProgress
                 value={currentReading}
-                size="212px"
+                size="211px"
                 thickness="5.5px"
                 color="green.400"
                 // trackColor="red"
                 trackColor="transparent"
                 capIsRound
-                style={{ transform: "rotate(180deg)" }}
+                // style={{ transform: "rotate(180deg)" }}
               ></CircularProgress>
-            </Box>
+            </Box> */}
 
-            <Box left={0} top={0} p={0.5} zIndex={3} position={"absolute"}>
-              <img src="/volumeframe.svg" alt="base-frame" />
+            <Box
+              left={0}
+              mt={"2.85px"}
+              ml={"-0.1px"}
+              top={-1.0}
+              p={0.5}
+              zIndex={3}
+              position={"absolute"}
+            >
+              <img src="/meter.svg" alt="base-frame" />
             </Box>
+          </Box>
+
+          {/* Top mark */}
+          <Box
+            w="100%"
+            zIndex={3}
+            position="absolute"
+            top="0"
+            textAlign={"center"}
+          >
+            <Text mt={1} ml={-1.0} fontSize={"sm"} fontWeight={"bold"}>
+              100
+            </Text>
+          </Box>
+
+          {/* Lower mark */}
+          <Box
+            w="100%"
+            zIndex={3}
+            position="absolute"
+            bottom="0"
+            textAlign={"center"}
+          >
+            <Text mb={1} ml={1.0} fontSize={"sm"} fontWeight={"bold"}>
+              0
+            </Text>
           </Box>
 
           {/* Inner circle with reading */}
           <Box
             position="absolute"
-            top="50%"
+            top="53%"
             left="50%"
             mt={-1.5}
             transform="translate(-50%, -50%)"
@@ -187,13 +236,14 @@ const DecibelMeter = () => {
         flexDir={"column"}
         alignItems={"center"}
         justifyContent={"center"}
+        px={[2, 2, 0]}
       >
         <Button
           onClick={handleMeasure}
           mt={4}
           w="full"
           h="51px"
-          maxW="sm"
+          maxW="md"
           bgGradient="linear(to-r, #D82B3C, #17101C)"
           color="white"
           _hover={{
