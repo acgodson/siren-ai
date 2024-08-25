@@ -44,7 +44,7 @@ const Header = ({ className }: { className?: string }) => {
       px={[2, 2, 10]}
     >
       <Box display={["block", "block", "block"]}>
-        <a className="flex space-x-2 text-md" target="_blank" href="/">
+        <a className="flex space-x-2 text-md" target="_blank" href="/home">
           <Image
             className="mt-0 opacity-100"
             h={["30px", "30px", "50px"]}
