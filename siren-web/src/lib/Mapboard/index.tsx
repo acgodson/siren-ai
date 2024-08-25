@@ -109,7 +109,7 @@ function Mapboard() {
             />
           )}
           {showAutocomplete && (
-            <Box id="suggestion" p={2} bg="white">
+            <Box id="suggestion">
               <Box
                 as="div"
                 mt={2}

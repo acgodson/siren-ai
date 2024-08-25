@@ -43,7 +43,7 @@ const LayoutLeftPanel = ({
       >
         <div
           className={`p-4 md:p-0 h-full flex flex-col transition-all duration-300 ease-in-out  ${
-            isDesktopExpanded ? "md:w-64" : "md:w-16"
+            isDesktopExpanded ? "md:w-72" : "md:w-16"
           }`}
         >
           <button
