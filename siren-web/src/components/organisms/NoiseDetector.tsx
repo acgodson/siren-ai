@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   VStack,
@@ -11,7 +11,13 @@ import {
   Avatar,
 } from "@chakra-ui/react";
 
-const DecibelMeter = ({ showTip }: { showTip: (action: any)  => void }) => {
+const DecibelMeter = ({
+  showTip,
+  actionRef,
+}: {
+  showTip: () => void;
+  actionRef: any;
+}) => {
   const [currentReading, setCurrentReading] = useState(40);
   const [max, setMax] = useState(0);
   const [min, setMin] = useState(0);
@@ -19,17 +25,22 @@ const DecibelMeter = ({ showTip }: { showTip: (action: any)  => void }) => {
   const [time, setTime] = useState("00:00:00");
   const [isRecording, setIsRecording] = useState(false);
 
+  const handleSubmit = async () => {
+    const disableTip = localStorage.getItem("disableTip");
+    if (!disableTip) {
+      actionRef.current = handleMeasure;
+      showTip();
+    } else {
+      handleMeasure();
+    }
+  };
+
   const segments = 36; // Number of blocks around the circle
   const activeSegments = Math.round((currentReading / 100) * segments);
 
-  const handleMeasure = (handleSubmit: any) => {
-    showTip(handleSubmit);
+  const handleMeasure = async () => {
+    alert("recording disabled");
     // Implement measurement logic here
-  };
-
-  const _handleSubmit = () => {
-    setIsRecording(!isRecording);
-    // alert("measuring function has started");
   };
 
   return (
@@ -246,7 +257,7 @@ const DecibelMeter = ({ showTip }: { showTip: (action: any)  => void }) => {
         px={[4, 2, 0]}
       >
         <Button
-          onClick={() => handleMeasure(_handleSubmit)}
+          onClick={handleSubmit}
           mt={4}
           w="full"
           h="51px"
