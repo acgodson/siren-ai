@@ -18,7 +18,7 @@ const DecibelMeter = ({
   showTip: () => void;
   actionRef: any;
 }) => {
-  const [currentReading, setCurrentReading] = useState(40);
+  const [currentReading, setCurrentReading] = useState(0);
   const [max, setMax] = useState(0);
   const [min, setMin] = useState(0);
   const [avg, setAvg] = useState(0);
