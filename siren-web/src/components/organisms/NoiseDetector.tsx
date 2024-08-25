@@ -11,7 +11,7 @@ import {
   Avatar,
 } from "@chakra-ui/react";
 
-const DecibelMeter = () => {
+const DecibelMeter = ({ showTip }: { showTip: (action: any)  => void }) => {
   const [currentReading, setCurrentReading] = useState(40);
   const [max, setMax] = useState(0);
   const [min, setMin] = useState(0);
@@ -22,9 +22,14 @@ const DecibelMeter = () => {
   const segments = 36; // Number of blocks around the circle
   const activeSegments = Math.round((currentReading / 100) * segments);
 
-  const handleMeasure = () => {
-    setIsRecording(!isRecording);
+  const handleMeasure = (handleSubmit: any) => {
+    showTip(handleSubmit);
     // Implement measurement logic here
+  };
+
+  const _handleSubmit = () => {
+    setIsRecording(!isRecording);
+    // alert("measuring function has started");
   };
 
   return (
@@ -241,7 +246,7 @@ const DecibelMeter = () => {
         px={[4, 2, 0]}
       >
         <Button
-          onClick={handleMeasure}
+          onClick={() => handleMeasure(_handleSubmit)}
           mt={4}
           w="full"
           h="51px"

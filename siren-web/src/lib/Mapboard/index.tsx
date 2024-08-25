@@ -18,6 +18,41 @@ import {
 } from "../../components/template/dashboard-wrapper";
 import NoiseLevelKey from "@/components/organisms/noiseLevelKey";
 
+const roadNoiseGeoJsonData = {
+  type: "FeatureCollection",
+  features: [
+    {
+      type: "Feature",
+      properties: {
+        noise_level: 25, // Quiet
+      },
+      geometry: {
+        type: "LineString",
+        coordinates: [
+          [-2.5879, 51.4545],
+          [-2.589, 51.455],
+          [-2.59, 51.4555],
+        ],
+      },
+    },
+    {
+      type: "Feature",
+      properties: {
+        noise_level: 55, // Moderately Loud
+      },
+      geometry: {
+        type: "LineString",
+        coordinates: [
+          [-2.6, 51.46],
+          [-2.601, 51.461],
+          [-2.602, 51.462],
+        ],
+      },
+    },
+    // Add more LineString features representing roads with varying noise levels
+  ],
+};
+
 function Mapboard() {
   const mapboxToken = process.env.NEXT_PUBLIC_MAP_API;
   const [fromlocation, setFromLocation] = useState<any>("");
@@ -65,9 +100,8 @@ function Mapboard() {
   }, [showAutocomplete]);
 
   useEffect(() => {
-    if (!mapboxToken) {
-      return;
-    }
+    if (!mapboxToken) return;
+
     console.log(mapboxToken);
     //@ts-ignore
     if (mapboxgl) {
@@ -76,10 +110,83 @@ function Mapboard() {
     //@ts-ignore
     const map = new mapboxgl.Map({
       container: "map",
-      style: "mapbox://styles/mapbox/streets-v12",
+      style: "mapbox://styles/mapbox/dark-v11",
       center: [-2.5879, 51.4545],
-      zoom: 12, // starting zoom
+      zoom: 12,
+      minZoom: 10,
+      maxZoom: 16,
     });
+    // Add heatmap layer (sample data)
+    map.on("load", () => {
+      // Neutralize text labels
+      const labelLayers = [
+        "country-label",
+        "state-label",
+        "settlement-label",
+        "settlement-subdivision-label",
+        "airport-label",
+        "poi-label",
+        "water-point-label",
+        "water-line-label",
+        "natural-point-label",
+        "natural-line-label",
+        "waterway-label",
+      ];
+
+      labelLayers.forEach((layer) => {
+        map.setPaintProperty(layer, "text-color", "#CCCCCC");
+        map.setPaintProperty(layer, "text-halo-color", "#FFFFFF");
+      });
+      // map.setPaintProperty("water", "fill-color", "#EAEAEA");
+      // map.setPaintProperty("landuse", "fill-color", "#F5F5F5");
+      // map.setPaintProperty("building", "fill-color", "#D3D3D3");
+
+
+      // Neutralize major link roads
+      map.setPaintProperty("road-major-link", "line-color", "#D3D3D3");
+      map.setPaintProperty("road-secondary-tertiary", "line-color", "#EAEAEA");
+      map.setPaintProperty("road-primary", "line-color", "#EAEAEA");
+      map.setPaintProperty("road-motorway-trunk", "line-color", "#EAEAEA");
+
+      map.setPaintProperty("road-network", "line-opacity", 0.2);
+
+      map.setFilter("road-label", ["!=", "class", "motorway"]);
+
+      map.addSource("roadNoiseData", {
+        type: "geojson",
+        data: roadNoiseGeoJsonData as any,
+      });
+
+      map.addLayer({
+        id: "road-noise-lines",
+        type: "line",
+        source: "roadNoiseData",
+        layout: {
+          "line-cap": "round",
+          "line-join": "round",
+        },
+        paint: {
+          "line-width": 7,
+          "line-opacity": 0.8,
+          "line-color": [
+            "interpolate",
+            ["linear"],
+            ["get", "noise_level"],
+            0,
+            "#00FF00", // Quiet (Green)
+            25,
+            "#ADFF2F", // Moderate (Light Green)
+            50,
+            "#FFD700", // Moderately Loud (Yellow)
+            75,
+            "#FF8C00", // Loud (Orange)
+            100,
+            "#FF0000", // Very Loud (Red)
+          ],
+        },
+      });
+    });
+
     return () => map.remove();
   }, [mapboxToken]);
 
