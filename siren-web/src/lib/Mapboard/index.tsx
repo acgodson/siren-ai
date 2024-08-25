@@ -8,9 +8,8 @@ import {
   Input,
   InputGroup,
 } from "@chakra-ui/react";
-//@ts-ignore
+import { PenToolIcon } from "lucide-react";
 import mapboxgl from "mapbox-gl";
-//@ts-ignore
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import {
   DashboardWrapper,
@@ -22,7 +21,48 @@ import NoiseLevelKey from "@/components/organisms/noiseLevelKey";
 function Mapboard() {
   const mapboxToken = process.env.NEXT_PUBLIC_MAP_API;
   const [fromlocation, setFromLocation] = useState<any>("");
-  const [tolocation, setToLocation] = useState<any>("");
+  // const [tolocation, setToLocation] = useState<any>("");
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
+
+  useEffect(() => {
+    const geocoderElement = document.getElementById("geocoder");
+    const suggestionBox = document.getElementById("suggestion");
+
+    if (!geocoderElement) {
+      const geocoderBox = document.createElement("div");
+      geocoderBox.id = "geocoder";
+      geocoderBox.style.border = "1px solid #ccc";
+      geocoderBox.style.borderRadius = "md";
+      geocoderBox.style.boxShadow = "md";
+      suggestionBox?.appendChild(geocoderBox);
+    }
+
+    if (showAutocomplete) {
+      if (geocoderElement) {
+        const geocoder = new MapboxGeocoder({
+          accessToken: mapboxToken as string,
+          types: "country,region,place,postcode,locality,neighborhood",
+          getItemValue: (x: any) => x.address,
+        });
+
+        if (geocoderElement.children.length < 1) {
+          geocoder.addTo("#geocoder");
+        }
+
+        geocoder.on("result", (e: any) => {
+          if (e && e.result) {
+            console.log("resulting", e.result);
+            setFromLocation(e.result);
+            return geocoderElement?.remove();
+          }
+        });
+
+        geocoder.on("clear", () => {
+          setFromLocation("");
+        });
+      }
+    }
+  }, [showAutocomplete]);
 
   useEffect(() => {
     if (!mapboxToken) {
@@ -40,22 +80,55 @@ function Mapboard() {
       center: [-2.5879, 51.4545],
       zoom: 12, // starting zoom
     });
-    // Clean up the map instance on component unmount
     return () => map.remove();
   }, [mapboxToken]);
+
+  useEffect(() => {
+    console.log(showAutocomplete);
+  }, [showAutocomplete]);
 
   return (
     <DashboardWrapper
       items={[
-        <InputGroup key="2" mb={4}>
-          <Input placeholder="From" />
-        </InputGroup>,
+        <Box w="100%" position={"relative"} mb={3}>
+          <Input
+            w="100%"
+            id="result"
+            position={"relative"}
+            placeholder="From Location"
+            type="text"
+            value={fromlocation ? fromlocation.place_name : ""}
+            isReadOnly={true}
+            onClick={() => setShowAutocomplete(!showAutocomplete)}
+            required
+          />
+          {fromlocation.place_name && (
+            <PenToolIcon
+              style={{ cursor: "pointer" }}
+              onClick={() => setShowAutocomplete(!showAutocomplete)}
+            />
+          )}
+          {showAutocomplete && (
+            <Box id="suggestion" p={2} bg="white">
+              <Box
+                as="div"
+                mt={2}
+                border="1px solid #ccc"
+                borderRadius="md"
+                boxShadow="md"
+                id="geocoder"
+              />
+            </Box>
+          )}
+        </Box>,
+
         <InputGroup key="1" mb={4}>
-          <Input placeholder="From" />
+          <Input placeholder="To" />
         </InputGroup>,
         <Button
           h="45px"
           px={4}
+          mt={[4, 4, 0]}
           w="100%"
           fontSize={"xl"}
           borderRadius={"30px"}

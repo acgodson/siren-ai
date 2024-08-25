@@ -5,22 +5,10 @@ import {
   Card,
   Flex,
   ListItem,
-  Text,
   UnorderedList,
   Button,
-  Input,
-  InputGroup,
 } from "@chakra-ui/react";
-import {
-  BookIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  HomeIcon,
-  List,
-  ListIcon,
-  MenuIcon,
-  MessageCircle,
-} from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, MenuIcon } from "lucide-react";
 import AuroraBackground from "../atoms/aurora-background";
 
 import Header from "../organisms/header";
@@ -65,7 +53,7 @@ const LayoutLeftPanel = ({
             {isDesktopExpanded ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </button>
 
-          <Box className="flex-grow overflow-hidden">
+          <Box px={0} className="flex-grow overflow-hidden">
             <Button
               display={["block", "none", "none"]}
               onClick={toggleDrawer}
@@ -76,16 +64,24 @@ const LayoutLeftPanel = ({
             >
               X
             </Button>
-            <Card>
-              {" "}
-              <UnorderedList alignItems="center">
-                {items.map((item, i) => (
-                  <ListItem display="flex" key={i}>
-                    {item}
-                  </ListItem>
-                ))}{" "}
-              </UnorderedList>
-            </Card>
+            <Box
+              w="100%"
+              minH={["60vh", "fit-content"]}
+              justifyContent={"center"}
+              display={"flex"}
+              alignItems={"center"}
+            >
+              <Card w="100%" py={12} pr={[4, 4, 4]}>
+                {" "}
+                <UnorderedList alignItems="center">
+                  {items.map((item, i) => (
+                    <ListItem display="flex" key={i}>
+                      {item}
+                    </ListItem>
+                  ))}{" "}
+                </UnorderedList>
+              </Card>
+            </Box>
           </Box>
         </div>
       </div>

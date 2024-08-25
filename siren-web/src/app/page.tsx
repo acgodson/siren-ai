@@ -1,4 +1,4 @@
-import Dashboard from "@/lib/Dashboard.tsx";
+import Dashboard from "@/lib/Measurement";
 import Welcome from "@/lib/Welcome";
 import { cookies, headers } from "next/headers";
 

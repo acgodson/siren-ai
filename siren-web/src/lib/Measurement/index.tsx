@@ -1,12 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import {
-  DashboardWrapper,
-  LayoutContent,
-  LayoutFooter,
-} from "../../components/template/dashboard-wrapper";
-
-import Overview from "../../components/organisms/overview";
+import { Box } from "@chakra-ui/react";
+import AppWrapper from "@/components/template/app-wrapper";
 
 import { usePrivy } from "@privy-io/react-auth";
 
@@ -23,21 +18,9 @@ function Dashboard() {
 
   return (
     <>
-      <DashboardWrapper>
-        <LayoutContent>
-          {isChat ? (
-            <></>
-          ) : (
-            <>{tabIndex ? <Overview toggleHome={toggleHome} /> : <></>}</>
-          )}
-        </LayoutContent>
-
-        {tabIndex && (
-          <LayoutFooter>
-            <p>&copy; 2024 Zero</p>
-          </LayoutFooter>
-        )}
-      </DashboardWrapper>
+      <AppWrapper>
+        <Box>Let's Measure</Box>
+      </AppWrapper>
     </>
   );
 }
