@@ -1,3 +1,4 @@
 	.DS_Store
 
-	siren-web/.env
+siren-web/.env
+.DS_Store
