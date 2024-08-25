@@ -23,7 +23,7 @@ function Dashboard() {
 
   return (
     <>
-      <DashboardWrapper toggleHome={toggleChat}>
+      <DashboardWrapper>
         <LayoutContent>
           {isChat ? (
             <></>

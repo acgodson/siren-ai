@@ -12,14 +12,12 @@ import {
   Divider,
   Center,
 } from "@chakra-ui/react";
-import { LockKeyholeOpen } from "lucide-react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useAccount } from "wagmi";
 
 import { useEthContext } from "../../evm/EthContext";
-import AuroraBackground from "@/components/atoms/aurora-background";
 import Header from "@/components/organisms/header";
-import { DomainRouter } from "@/app/DomainRouter";
+
 
 function Welcome() {
   const { isConnected, address } = useAccount();
@@ -126,6 +124,7 @@ Benefit form user-contributed routes and noise data.`,
                     bgGradient: "linear(to-r, #17101C, #D82B3C)",
                   }}
                   px={[3, 3, 12]}
+                  zIndex={"tooltip"}
                   // onClick={handleLogin}
                   rightIcon={<img src="/measuring.png" alt="measuring" />}
                 >
@@ -215,6 +214,7 @@ Benefit form user-contributed routes and noise data.`,
           <Box mt={12} w="100%">
             {howItWorks.map((x, i) => (
               <Flex
+              key={i}
                 my={12}
                 w="full"
                 h={["fit-content", "fit-content", "60vh"]}

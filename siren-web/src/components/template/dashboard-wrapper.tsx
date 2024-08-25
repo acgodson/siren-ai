@@ -8,6 +8,8 @@ import {
   Text,
   UnorderedList,
   Button,
+  Input,
+  InputGroup,
 } from "@chakra-ui/react";
 import {
   BookIcon,
@@ -100,7 +102,7 @@ const LayoutContent = ({ children }: { children: React.ReactNode }) => {
 const LayoutFooter = ({ children }: { children: React.ReactNode }) => {
   return (
     <footer className="w-full px-4 mt-16 ">
-      <Card className="p-4 text-center bg-[#e6effc] border-opacity-5">
+      <Card className="p-4 text-center bg-[#e6effc] border-opacity-1">
         {" "}
         {children}
       </Card>
@@ -111,10 +113,10 @@ const LayoutFooter = ({ children }: { children: React.ReactNode }) => {
 // DashboardWrapper Component
 const DashboardWrapper = ({
   children,
-  toggleHome,
+  items,
 }: {
   children: React.ReactNode;
-  toggleHome: () => void;
+  items: any[];
 }) => {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
 
@@ -131,24 +133,7 @@ const DashboardWrapper = ({
             <LayoutLeftPanel
               isOpen={isDrawerOpen}
               toggleDrawer={toggleDrawer}
-              items={[
-                <Button
-                  leftIcon={<MessageCircle />}
-                  className="my-3 w-full"
-                  key="2"
-                  onClick={toggleHome}
-                >
-                  {isDrawerOpen ? "Live" : "Live"}
-                </Button>,
-                <Button
-                  onClick={toggleHome}
-                  leftIcon={<ListIcon />}
-                  className="my-3 w-full"
-                  key="1"
-                >
-                  {isDrawerOpen ? "Documents" : "Documents"}
-                </Button>,
-              ]}
+              items={items}
             />
             <LayoutContent>{children}</LayoutContent>
           </div>

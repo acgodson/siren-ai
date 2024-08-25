@@ -38,16 +38,6 @@ function Overview({ toggleHome }: { toggleHome: () => void }) {
   const [store, setStore] = useState<any | string>(null);
   const [copySuccess, setCopySuccess] = useState(false);
 
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000); // Reset success message after 2 seconds
-    } catch (err) {
-      console.error("Failed to copy text: ", err);
-    }
-  };
-
   const fetchAgents = () => {};
 
   return (

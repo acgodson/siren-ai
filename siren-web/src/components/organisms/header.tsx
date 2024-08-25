@@ -73,9 +73,8 @@ const Header = ({ className }: { className?: string }) => {
             }}
             className="py-5 cursor-pointer"
             onClick={toggleAccountModal}
-            rightIcon={<img src="/toggle-ai.png" alt="toggle-AI" />}
           >
-            AI
+            Login
           </Button>
         )}
       </Box>
