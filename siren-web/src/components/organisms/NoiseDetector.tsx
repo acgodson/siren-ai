@@ -1,15 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  VStack,
-  HStack,
-  Text,
-  Button,
-  CircularProgress,
-  CircularProgressLabel,
-  Avatar,
-} from "@chakra-ui/react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Box, VStack, HStack, Text, Button } from "@chakra-ui/react";
+import DualSoundBarProgress from "../molecules/dual-soundbar-progress";
 
 const DecibelMeter = ({
   showTip,
@@ -18,6 +10,7 @@ const DecibelMeter = ({
   showTip: () => void;
   actionRef: any;
 }) => {
+  // State variables for noise measurements
   const [currentReading, setCurrentReading] = useState(0);
   const [max, setMax] = useState(0);
   const [min, setMin] = useState(0);
@@ -25,7 +18,118 @@ const DecibelMeter = ({
   const [time, setTime] = useState("00:00:00");
   const [isRecording, setIsRecording] = useState(false);
 
+  // Refs for audio context-related variables
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
+
+  // State variables for GPS tracking
+  const [currentLatitude, setCurrentLatitude] = useState<number | null>(null);
+  const [currentLongitude, setCurrentLongitude] = useState<number | null>(null);
+  const [locationData, setLocationData] = useState<
+    { lat: number; lng: number; noise: number }[]
+  >([]);
+
+  // Handle GPS tracking
+  useEffect(() => {
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setCurrentLatitude(latitude);
+        setCurrentLongitude(longitude);
+        // Log the location data to the console
+        console.log("Location Data: ", { latitude, longitude });
+      },
+      (error) => {
+        console.error("Error getting location", error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+      }
+    );
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, []);
+
+  // Handle noise measurement and updating locationData
+  useEffect(() => {
+    if (
+      currentReading > 0 &&
+      currentLatitude !== null &&
+      currentLongitude !== null
+    ) {
+      setLocationData((prevData) => [
+        ...prevData,
+        { lat: currentLatitude, lng: currentLongitude, noise: currentReading },
+      ]);
+
+      // Log the combined data (location + noise)
+      console.log("Data Point:", {
+        lat: currentLatitude,
+        lng: currentLongitude,
+        noise: currentReading,
+      });
+    }
+  }, [currentReading, currentLatitude, currentLongitude]);
+
+  const calculateDecibels = useCallback(
+    (dataArray: Uint8Array) => {
+      if (!isRecording) return;
+      analyserRef.current?.getByteFrequencyData(dataArray);
+      const sum = dataArray.reduce((a, b) => a + b, 0);
+      const avg = sum / dataArray.length;
+      const decibels = Math.max(20 * Math.log10(avg), 0);
+      setCurrentReading(Math.round(decibels));
+    },
+    [isRecording, analyserRef]
+  );
+
+  // State for recording
+  useEffect(() => {
+    if (!isRecording) return;
+    const dataArray = new Uint8Array(
+      analyserRef.current?.frequencyBinCount || 0
+    );
+    const updateDecibels = () => {
+      calculateDecibels(dataArray);
+      if (isRecording) {
+        requestAnimationFrame(updateDecibels); // Continue loop if still recording
+      }
+    };
+    requestAnimationFrame(updateDecibels);
+    return () => {
+      // Cleanup: Stop loop when recording stops
+      setCurrentReading(0);
+    };
+  }, [isRecording, calculateDecibels]);
+
+  const captureAudio = async () => {
+    try {
+      streamRef.current = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+      audioContextRef.current = new AudioContext();
+      sourceRef.current = audioContextRef.current.createMediaStreamSource(
+        streamRef.current
+      );
+      analyserRef.current = audioContextRef.current.createAnalyser();
+      analyserRef.current.fftSize = 256;
+
+      const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+      sourceRef.current.connect(analyserRef.current);
+      setIsRecording(true);
+    } catch (err) {
+      console.error("Error accessing microphone", err);
+    }
+  };
+
   const handleSubmit = async () => {
+    if (isRecording) {
+      stopRecording();
+      return;
+    }
     const disableTip = localStorage.getItem("disableTip");
     if (!disableTip) {
       actionRef.current = handleMeasure;
@@ -35,12 +139,20 @@ const DecibelMeter = ({
     }
   };
 
-  const segments = 36; // Number of blocks around the circle
-  const activeSegments = Math.round((currentReading / 100) * segments);
-
   const handleMeasure = async () => {
-    alert("recording disabled");
-    // Implement measurement logic here
+    captureAudio();
+  };
+
+  const stopRecording = () => {
+    if (audioContextRef.current) {
+      audioContextRef.current.close(); // Close the audio context
+      audioContextRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    setIsRecording(false);
   };
 
   return (
@@ -104,26 +216,7 @@ const DecibelMeter = ({
                 <img src="/volumebase.svg" alt="base-frame" />
               </Box>
 
-              {/* <Box
-              opacity={1}
-              zIndex={1}
-              // px={"3.2px"}
-              position={"absolute"}
-              mt={'0.2px'}
-              right={"-8.15px"}
-              top={-0.5}
-            >
-              <CircularProgress
-                value={currentReading}
-                size="211px"
-                thickness="5.5px"
-                color="green.400"
-                // trackColor="red"
-                trackColor="transparent"
-                capIsRound
-                // style={{ transform: "rotate(180deg)" }}
-              ></CircularProgress>
-            </Box> */}
+              <DualSoundBarProgress currentReading={currentReading} />
 
               <Box
                 left={0}
