@@ -16,7 +16,7 @@ const nextConfig = {
         new CopyWebpackPlugin({
           patterns: [
             {
-              from: "../zk-proof/circuits/**/*",
+              from: "../circuits/**/*",
               to: path.resolve(process.cwd(), "public/circuits"),
             },
           ],

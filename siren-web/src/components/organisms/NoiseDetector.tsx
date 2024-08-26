@@ -53,7 +53,7 @@ const DecibelMeter = ({
       try {
         const module = await import("@noir-lang/backend_barretenberg");
         const response: any = await fetch(
-          "zk-proof/circuits/check_distance/target/check_distance.json"
+          "circuits/check_distance/target/check_distance.json"
         );
         if (response.ok) {
           const circuit = await response.json();
