@@ -2,6 +2,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Box, VStack, HStack, Text, Button } from "@chakra-ui/react";
 import DualSoundBarProgress from "../molecules/dual-soundbar-progress";
+import { Noir } from "@noir-lang/noir_js";
+import { deserializeProof, shortenAddress } from "@/utils";
 
 const DecibelMeter = ({
   showTip,
@@ -10,6 +12,17 @@ const DecibelMeter = ({
   showTip: () => void;
   actionRef: any;
 }) => {
+  const loadWasmModules = async () => {
+    await Promise.all([
+      import("@noir-lang/noirc_abi/web/noirc_abi_wasm.js").then((module) =>
+        module.default()
+      ),
+      import("@noir-lang/acvm_js/web/acvm_js.js").then((module) =>
+        module.default()
+      ),
+    ]);
+  };
+
   // State variables for noise measurements
   const [currentReading, setCurrentReading] = useState(0);
   const [max, setMax] = useState(0);
@@ -30,6 +43,86 @@ const DecibelMeter = ({
   const [locationData, setLocationData] = useState<
     { lat: number; lng: number; noise: number }[]
   >([]);
+
+  const [BarretenbergBackend, setBarretenbergBackend] = useState<any>(null);
+  const [noir, setNoir] = useState<any>(null);
+  const [Verifier, setVerifier] = useState<any>(null);
+
+  useEffect(() => {
+    const loadBarretenbergModules = async () => {
+      try {
+        const module = await import("@noir-lang/backend_barretenberg");
+        const response: any = await fetch(
+          "zk-proof/circuits/check_distance/target/check_distance.json"
+        );
+        if (response.ok) {
+          const circuit = await response.json();
+          console.log(circuit);
+          const backend = new module.BarretenbergBackend(circuit);
+          const _verifer = new module.BarretenbergVerifier(circuit);
+          setVerifier(_verifer);
+          setBarretenbergBackend(backend);
+          const _noir = new Noir(circuit);
+          setNoir(_noir);
+        }
+      } catch (error) {
+        console.error("Error loading Barretenberg modules:", error);
+      }
+    };
+    loadWasmModules()
+      .then(() => {
+        // Now you have the WASM modules loaded
+        console.log("Loaded noircAbi and acvmJs:");
+        loadBarretenbergModules();
+      })
+      .catch((error) => {
+        console.error("Error loading WASM modules:", error);
+      });
+  }, []);
+
+  const generateProof = async () => {
+    if (!noir || !BarretenbergBackend) {
+      console.log("noir not initiated");
+      return;
+    }
+    try {
+      const value = "52520,13405,48857,2352";
+      const [lat1, lon1, lat2, lon2] = value.split(",").map(Number);
+      if (isNaN(lat1) || isNaN(lon1) || isNaN(lat2) || isNaN(lon2)) {
+        throw new Error("Invalid input; please enter valid coordinates.");
+      }
+      console.log("this values", lat1, lon1, lat2, lon2);
+      const input = { lat1, lon1, lat2, lon2 };
+      console.log(input);
+
+      const { witness } = await noir.execute(input);
+      const proof = await BarretenbergBackend.generateProof(witness);
+      console.log("distance-prover", "✅ Proofgenerated");
+      console.log(proof);
+      return proof;
+    } catch (e) {
+      console.log("error generating proof", e);
+    }
+  };
+
+  const verifyProof = async (proof: string) => {
+    if (!noir || !BarretenbergBackend || !Verifier) {
+      console.log("noir or verifier not initiated");
+      return;
+    }
+    try {
+      const inputProof = deserializeProof(proof);
+      const verificationKey = await BarretenbergBackend.getVerificationKey();
+      const isValid = await Verifier.verifyProof(inputProof, verificationKey);
+      if (isValid) {
+        console.log("distance-verifier", "✅ Proof verified");
+      } else {
+        console.log("distance-verifier", "❌ Proof invalid");
+      }
+    } catch (e) {
+      console.log("error verifying proof", e);
+    }
+  };
 
   // Handle GPS tracking
   useEffect(() => {
@@ -62,7 +155,11 @@ const DecibelMeter = ({
     ) {
       setLocationData((prevData) => [
         ...prevData,
-        { lat: currentLatitude, lng: currentLongitude, noise: currentReading },
+        {
+          lat: currentLatitude,
+          lng: currentLongitude,
+          noise: currentReading,
+        },
       ]);
 
       // Log the combined data (location + noise)
@@ -125,7 +222,14 @@ const DecibelMeter = ({
     }
   };
 
+  //load circuit
+
   const handleSubmit = async () => {
+    const proof = await generateProof();
+    if (proof) {
+      await verifyProof(JSON.stringify(proof));
+    }
+    return;
     if (isRecording) {
       stopRecording();
       return;

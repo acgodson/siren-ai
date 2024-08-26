@@ -6,11 +6,12 @@
   "name": "explorer",
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "prebuild": "make compile && make install && cd siren-web && pnpm i",
+    "prebuild": "make compile && cd siren-web && pnpm i",
     "dev": "make compile &&  npm run dev --workspaces --if-present"
   },
   "type": "module",
   "workspaces": [
-    "siren-web"
+    "siren-web",
+    "zk-proof"
   ]
 }

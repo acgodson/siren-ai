@@ -4,13 +4,19 @@ import path from "path";
 
 const nextConfig = {
   webpack: (config, { isServer }) => {
+    config.experiments = {
+      ...config.experiments,
+      asyncWebAssembly: true,
+      layers: true,
+      topLevelAwait: true,
+    };
+
     if (!isServer) {
-      // Add the copy-webpack-plugin
       config.plugins.push(
         new CopyWebpackPlugin({
           patterns: [
             {
-              from: path.resolve(process.cwd(), "../zk-proof/circuits/**/*"),
+              from: "../zk-proof/circuits/**/*",
               to: path.resolve(process.cwd(), "public/circuits"),
             },
           ],
@@ -20,14 +26,7 @@ const nextConfig = {
 
     return config;
   },
-  async rewrites() {
-    return [
-      {
-        source: "/home",
-        destination: "https://www.sirenwatch.xyz",
-      },
-    ];
-  },
+  swcMinify: false,
 };
 
 export default nextConfig;

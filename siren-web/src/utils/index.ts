@@ -64,3 +64,15 @@ export const getValidSubdomain = (host?: string | null) => {
   }
   return subdomain;
 };
+
+export const deserializeProof = (proofString: string) => {
+  const parsedProof = JSON.parse(proofString);
+
+  const proofArray = Object.values(parsedProof.proof).map(Number);
+  const proofUint8Array = new Uint8Array(proofArray);
+
+  return {
+    proof: proofUint8Array,
+    publicInputs: parsedProof.publicInputs.map(String),
+  };
+};

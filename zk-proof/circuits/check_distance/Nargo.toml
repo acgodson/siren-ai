@@ -1,5 +1,5 @@
 [package]
-name = "check_age"
+name = "check_distance"
 type = "bin"
 authors = [""]
 compiler_version = ">=0.32.0"

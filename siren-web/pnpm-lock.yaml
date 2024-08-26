@@ -29,6 +29,18 @@ dependencies:
   '@mapbox/mapbox-gl-geocoder':
     specifier: ^5.0.2
     version: 5.0.2
+  '@noir-lang/acvm_js':
+    specifier: ^0.49.0
+    version: 0.49.0
+  '@noir-lang/backend_barretenberg':
+    specifier: ^0.32.0
+    version: 0.32.0
+  '@noir-lang/noir_js':
+    specifier: ^0.32.0
+    version: 0.32.0
+  '@noir-lang/noirc_abi':
+    specifier: ^0.33.0
+    version: 0.33.0
   '@privy-io/react-auth':
     specifier: ^1.66.2
     version: 1.80.0(@babel/core@7.25.2)(@types/react@18.3.4)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(typescript@5.5.4)
@@ -140,6 +152,18 @@ packages:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.5
       '@jridgewell/trace-mapping': 0.3.25
+    dev: false
+
+  /@aztec/bb.js@0.46.1:
+    resolution: {integrity: sha512-SDagbw+jLLRVEPvE5ZQlU1VVvOG7YXw4HEC0c7zdPtdehN58m35ejhrAnC8zKg9gSTF6UeoyqdeXdWd72w0wFw==}
+    hasBin: true
+    dependencies:
+      comlink: 4.4.1
+      commander: 10.0.1
+      debug: 4.3.6(supports-color@5.5.0)
+      tslib: 2.7.0
+    transitivePeerDependencies:
+      - supports-color
     dev: false
 
   /@babel/code-frame@7.24.7:
@@ -4431,6 +4455,52 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
 
+  /@noir-lang/acvm_js@0.48.0:
+    resolution: {integrity: sha512-Hh9FoBdyXiw4tas6EGCyu7qirHG3x07RkJk5tPuzlasN+P6YMVT3sraRjCYbpt9gTwmvVVssRNpcORoSSTKrmw==}
+    dev: false
+
+  /@noir-lang/acvm_js@0.49.0:
+    resolution: {integrity: sha512-bBcEbGB48ippJnuDu17JDsR5NFazcY4/huzouFkjLpSrFfzlUINCeZ0JqwuQHMq6VDlPB9L8KF7q3zJ5X1L34g==}
+    dev: false
+
+  /@noir-lang/backend_barretenberg@0.32.0:
+    resolution: {integrity: sha512-+4OKjOaIUo8Zez4lS8JMwPDwsf6xgChm3To2m5R3NVN8GM7r+o6S/eABDdaHRBYUoZeUawrqk6UMZoxxucDVSQ==}
+    dependencies:
+      '@aztec/bb.js': 0.46.1
+      '@noir-lang/types': 0.32.0
+      fflate: 0.8.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /@noir-lang/noir_js@0.32.0:
+    resolution: {integrity: sha512-G1mlUOURhh00iVz7iwKmTNpe6MMrbA7oXagzNuO6B9Ohc9+CnAfF5mp/6lMgjzZWzblEV25G7crLPr9sJLhhGQ==}
+    dependencies:
+      '@noir-lang/acvm_js': 0.48.0
+      '@noir-lang/noirc_abi': 0.32.0
+      '@noir-lang/types': 0.32.0
+    dev: false
+
+  /@noir-lang/noirc_abi@0.32.0:
+    resolution: {integrity: sha512-UDfokc3ANTbguygS4jxvhk9L0GRhElK12RyA2bI0EszRmVDPfafWmhqF9e85KcIeK+HSZ0sSifDoXWeNaE6PZw==}
+    dependencies:
+      '@noir-lang/types': 0.32.0
+    dev: false
+
+  /@noir-lang/noirc_abi@0.33.0:
+    resolution: {integrity: sha512-aTkTIIFh9QJqfjrXMCNwvZOKZTxYgAEtgVc3uuKIbv4C6hghg6NHaWnQ04szCvSfA9hvc1T+Std087CrAahvYA==}
+    dependencies:
+      '@noir-lang/types': 0.33.0
+    dev: false
+
+  /@noir-lang/types@0.32.0:
+    resolution: {integrity: sha512-9ueJFoEx7O8h5/CzzB8Q62HeTbUlgQHVT2BrUnO/QY4atGClIe77vH2an4MCvHY1poG5nZO69CWvDR/+Quqqqw==}
+    dev: false
+
+  /@noir-lang/types@0.33.0:
+    resolution: {integrity: sha512-iXtn+L7Fy1Oj7XUKLg3Jpam213QDQtmt/5izNnMaESz87+3vNNeAKR2ssVOB6qkjkuOH8p7cShSruGCPACiaAA==}
+    dev: false
+
   /@parcel/watcher-android-arm64@2.4.1:
     resolution: {integrity: sha512-LOi/WTbbh3aTn2RYddrO8pnapixAziFl6SMxHM69r3tvdSm94JtCenaKgk1GRg5FJ5wpMCpHeW+7yqPlvZv7kg==}
     engines: {node: '>= 10.0.0'}
@@ -7007,6 +7077,7 @@ packages:
   /cliui@8.0.1:
     resolution: {integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==}
     engines: {node: '>=12'}
+    requiresBuild: true
     dependencies:
       string-width: 4.2.3
       strip-ansi: 6.0.1
@@ -7079,6 +7150,10 @@ packages:
     engines: {node: '>= 0.8'}
     dependencies:
       delayed-stream: 1.0.0
+    dev: false
+
+  /comlink@4.4.1:
+    resolution: {integrity: sha512-+1dlx0aY5Jo1vHy/tSsIGpSkN4tS9rZSW8FIhG0JH/crs9wwweswIo/POr451r7bZww3hFbPAKnTpimzL/mm4Q==}
     dev: false
 
   /command-exists@1.2.9:
@@ -7900,6 +7975,7 @@ packages:
       is-hex-prefixed: 1.0.0
       strip-hex-prefix: 1.0.0
     dev: false
+    bundledDependencies: false
 
   /event-emitter@0.3.5:
     resolution: {integrity: sha512-D9rRn9y7kLPnJ+hMq7S/nhvoKwwvVJahBi2BPmx3bvbsEdK3W9ii8cBSGjP+72/LnM4n6fo3+dkCX5FeTQruXA==}
@@ -8059,6 +8135,10 @@ packages:
 
   /fetch-retry@5.0.6:
     resolution: {integrity: sha512-3yurQZ2hD9VISAhJJP9bpYFNQrHHBXE2JxxjY5aLEcDi46RmAzJE2OC9FAde0yis5ElW0jTTzs0zfg/Cca4XqQ==}
+    dev: false
+
+  /fflate@0.8.2:
+    resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
     dev: false
 
   /fill-range@7.1.1:
@@ -13080,6 +13160,7 @@ packages:
   /y18n@5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
     engines: {node: '>=10'}
+    requiresBuild: true
     dev: false
 
   /yaeti@0.0.6:
@@ -13121,6 +13202,7 @@ packages:
   /yargs-parser@21.1.1:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}
     engines: {node: '>=12'}
+    requiresBuild: true
     dev: false
 
   /yargs@15.4.1:
