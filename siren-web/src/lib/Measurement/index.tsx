@@ -1,10 +1,13 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, VStack, Text, useDisclosure } from "@chakra-ui/react";
 import AppWrapper from "@/components/template/app-wrapper";
 
 import DecibelMeter from "@/components/organisms/NoiseDetector";
 import HowToMeasureDialog from "@/components/molecules/how-to-measure";
+import check_age from "../../../../zk-proof/circuits/check_age/target/check_age.json";
+
+// circuits/check_age/target/check_age.json";
 
 function Dashboard() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -17,6 +20,10 @@ function Dashboard() {
     }
     onClose();
   };
+
+  useEffect(() => {
+    console.log(check_age);
+  }, []);
 
   return (
     <>
