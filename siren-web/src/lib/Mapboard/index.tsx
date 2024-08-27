@@ -16,7 +16,7 @@ import {
   LayoutContent,
   LayoutFooter,
 } from "../../components/template/dashboard-wrapper";
-import NoiseLevelKey from "@/components/organisms/noiseLevelKey";
+import NoiseLevelKey from "@/components/molecules/noiseLevelKey";
 
 const roadNoiseGeoJsonData = {
   type: "FeatureCollection",
@@ -140,7 +140,6 @@ function Mapboard() {
       // map.setPaintProperty("water", "fill-color", "#EAEAEA");
       // map.setPaintProperty("landuse", "fill-color", "#F5F5F5");
       // map.setPaintProperty("building", "fill-color", "#D3D3D3");
-
 
       // Neutralize major link roads
       map.setPaintProperty("road-major-link", "line-color", "#D3D3D3");
