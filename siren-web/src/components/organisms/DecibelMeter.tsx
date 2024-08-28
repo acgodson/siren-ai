@@ -67,9 +67,12 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
     const objectName = "my-data.json";
 
     const greenfield = new Greenfield(provider);
-    
+
     //initiate greenfield (this will select the first storage provider)
-    await greenfield.initialize();
+    const sProvider = await greenfield.initialize();
+
+    console.log("storage provider found: ", provider);
+    return;
 
     //authenticate greenfield
     await greenfield.authenticate(address);

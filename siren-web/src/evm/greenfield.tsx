@@ -56,12 +56,13 @@ class Greenfield {
     this.backendUrl = options.backendUrl || "/api/broadcast";
   }
 
-  async initialize(): Promise<void> {
+  async initialize(): Promise<any> {
     const spList = await this.client.sp.getStorageProviders();
     this.sp = {
       operatorAddress: spList[0].operatorAddress,
       endpoint: spList[0].endpoint,
     };
+    return this.sp;
   }
 
   private jsonToFileData(json: object, filename: string): FileData {
