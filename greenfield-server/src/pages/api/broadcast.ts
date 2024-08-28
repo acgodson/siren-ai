@@ -57,7 +57,7 @@ export default async function handler(
     console.log("Operation Type:", operationType);
     // console.log("Operation Data:", safeStringify(operationData));
 
-    let tx;
+    let tx: any;
 
     switch (operationType) {
       case "createBucket":

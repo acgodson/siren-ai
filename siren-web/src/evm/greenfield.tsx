@@ -1,11 +1,8 @@
 import {
   Client,
   VisibilityType,
-  RedundancyType,
   ISp,
   TxResponse,
-  Long,
-  bytesFromBase64,
 } from "@bnb-chain/greenfield-js-sdk";
 import { ReedSolomon } from "@bnb-chain/reed-solomon";
 import { bscGreenfield } from "viem/chains";
@@ -53,7 +50,7 @@ class Greenfield {
     this.provider = provider;
     this.rs = new ReedSolomon();
     this.useBackendBroadcast = options.useBackendBroadcast || false;
-    this.backendUrl = options.backendUrl || "/api/broadcast";
+    this.backendUrl = options.backendUrl || "";
   }
 
   async initialize(): Promise<any> {
@@ -62,6 +59,7 @@ class Greenfield {
       operatorAddress: spList[0].operatorAddress,
       endpoint: spList[0].endpoint,
     };
+
     return this.sp;
   }
 
@@ -77,13 +75,27 @@ class Greenfield {
     };
   }
 
-  async authenticate(address: string): Promise<any> {
+  async authenticate(address: string): Promise<OffChainAuthData> {
     if (!this.sp) {
       throw new Error(
         "Storage provider not initialized. Call initialize() first."
       );
     }
 
+    const storageKey = `greenfield_auth_${address}`;
+    const storedAuthData = localStorage.getItem(storageKey);
+
+    if (storedAuthData) {
+      const parsedAuthData = JSON.parse(storedAuthData) as OffChainAuthData;
+      if (parsedAuthData.expirationTime > Date.now()) {
+        this.offChainData = parsedAuthData;
+        return parsedAuthData;
+      }
+      // If expired, remove it and generate a new one
+      localStorage.removeItem(storageKey);
+    }
+
+    // Generate new off-chain auth data
     const offchainAuthRes =
       await this.client.offchainauth.genOffChainAuthKeyPairAndUpload(
         {
@@ -100,8 +112,14 @@ class Greenfield {
         },
         this.provider
       );
-    this.offChainData = offchainAuthRes as any;
-    return offchainAuthRes;
+
+    if (offchainAuthRes.code !== 0 || !offchainAuthRes.body) {
+      throw new Error("Failed to generate off-chain auth key pair");
+    }
+
+    this.offChainData = offchainAuthRes.body;
+    localStorage.setItem(storageKey, JSON.stringify(this.offChainData));
+    return this.offChainData;
   }
 
   private async broadcastTx(
@@ -113,39 +131,18 @@ class Greenfield {
       payer: address,
     };
 
+    let endpoint = "api/broadcast";
+
     if (this.useBackendBroadcast) {
+      console.log(operationData);
+
       // Send to backend for broadcasting
-      const response = await axios.post(this.backendUrl, {
+      const response = await axios.post(`${this.backendUrl}/${endpoint}`, {
         txData,
         operationType,
         operationData,
       });
       return response.data;
-    } else {
-      // Broadcast directly from frontend
-      let tx;
-      switch (operationType) {
-        case "createBucket":
-          tx = await this.client.bucket.createBucket(operationData);
-          break;
-        case "createObject":
-          tx = await this.client.object.createObject({
-            ...operationData,
-            folder: "",
-          });
-          break;
-        // Add other operation types as needed
-        default:
-          throw new Error("Unsupported operation type");
-      }
-      const simulateInfo = await tx.simulate({ denom: "BNB" });
-      return await tx.broadcast({
-        denom: "BNB",
-        gasLimit: Number(simulateInfo?.gasLimit),
-        gasPrice: simulateInfo?.gasPrice || "5000000000",
-        payer: address,
-        granter: "",
-      });
     }
   }
 
@@ -168,7 +165,6 @@ class Greenfield {
       bucketName: bucketName,
       creator: address,
       visibility: visibility,
-      chargedReadQuota: "0",
       primarySpAddress: this.sp.operatorAddress,
       paymentAddress: address,
     };
@@ -183,104 +179,34 @@ class Greenfield {
     isPublic: boolean = true
   ): Promise<any> {
     const fileData = this.jsonToFileData(jsonData, objectName);
-    return this.createAndUploadObject(
-      bucketName,
-      objectName,
-      fileData,
-      address,
-      isPublic
-    );
-  }
-
-  async createAndUploadObject(
-    bucketName: string,
-    objectName: string,
-    fileData: FileData,
-    address: string,
-    isPublic: boolean = true
-  ): Promise<TxResponse | any> {
-    if (!this.offChainData) {
-      throw new Error("Not authenticated. Call authenticate() first.");
-    }
+    console.log(fileData);
+    const expectCheckSums = this.rs.encode(fileData.buffer);
 
     const visibility = isPublic
       ? VisibilityType.VISIBILITY_TYPE_PUBLIC_READ
       : VisibilityType.VISIBILITY_TYPE_PRIVATE;
-
-    // const fileBytes = await file.arrayBuffer();
-    const expectCheckSums = this.rs.encode(fileData.buffer);
 
     const operationData = {
       bucketName: bucketName,
       objectName: objectName,
       creator: address,
       visibility: visibility,
-      contentType: fileData.type,
-      redundancyType: RedundancyType.REDUNDANCY_EC_TYPE,
-      payloadSize: Long.fromString(fileData.size.toString()),
-      expectChecksums: expectCheckSums.map((x) => bytesFromBase64(x)),
+      payloadSize: fileData.size,
+      expectChecksums: expectCheckSums,
     };
 
+    console.log("0", operationData);
+
+    //Create Object
     const res = await this.broadcastTx("createObject", operationData, address);
-
-    if (this.useBackendBroadcast) {
-      // If using backend broadcast, send file data to backend for upload
-      const uploadResponse = await axios.post(`${this.backendUrl}/upload`, {
-        bucketName,
-        objectName,
-        fileData: fileData.buffer.toString("base64"), // Convert buffer to base64 for transmission
-        txnHash: res.transactionHash,
-        address,
-      });
-      return uploadResponse.data;
-    } else {
-      // If not using backend broadcast, upload directly
-      const uploadRes = await this.client.object.uploadObject(
-        {
-          bucketName: bucketName,
-          objectName: objectName,
-          body: {
-            name: fileData.name,
-            type: fileData.type,
-            size: fileData.size,
-            content: fileData.buffer,
-          },
-          txnHash: res.transactionHash,
-        },
-        {
-          type: "EDDSA",
-          domain: window.location.origin,
-          seed: this.offChainData.seedString,
-          address,
-        }
-      );
-      return uploadRes;
-    }
-  }
-
-  async downloadObject(
-    bucketName: string,
-    objectName: string,
-    address: string
-  ): Promise<TxResponse | any> {
-    if (!this.offChainData) {
-      throw new Error("Not authenticated. Call authenticate() first.");
-    }
-
-    const res = await this.client.object.downloadFile(
-      {
-        bucketName: bucketName,
-        objectName: objectName,
-      },
-      {
-        type: "EDDSA",
-        address,
-        domain: window.location.origin,
-        seed: this.offChainData.seedString,
-      }
-    );
-
-    return res;
+    //Upload Object
+    const uploadResponse = await axios.post(`${this.backendUrl}/api/upload`, {
+      bucketName,
+      objectName,
+      fileData: fileData.buffer.toString("base64"),
+      txnHash: res.transactionHash,
+    });
+    return uploadResponse.data;
   }
 }
 
