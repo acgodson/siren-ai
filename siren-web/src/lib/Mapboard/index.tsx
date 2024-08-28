@@ -144,10 +144,10 @@ function Mapboard() {
       // Neutralize major link roads
       map.setPaintProperty("road-major-link", "line-color", "#D3D3D3");
       map.setPaintProperty("road-secondary-tertiary", "line-color", "#EAEAEA");
-      map.setPaintProperty("road-primary", "line-color", "#EAEAEA");
-      map.setPaintProperty("road-motorway-trunk", "line-color", "#EAEAEA");
+      // map.setPaintProperty("road-primary", "line-color", "#EAEAEA");
+      // map.setPaintProperty("road-motorway-trunk", "line-color", "#EAEAEA");
 
-      map.setPaintProperty("road-network", "line-opacity", 0.2);
+      // map.setPaintProperty("road-network", "line-opacity", 0.2);
 
       map.setFilter("road-label", ["!=", "class", "motorway"]);
 

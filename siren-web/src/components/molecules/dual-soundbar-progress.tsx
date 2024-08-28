@@ -1,11 +1,29 @@
 import { Box, CircularProgress } from "@chakra-ui/react";
 
+const noiseCategories = [
+  { max: 35, color: "#90EE90", label: "Quiet" }, // e.g., Residential area at night
+  { max: 40, color: "#FFFF00", label: "Moderate" }, // e.g., Normal traffic, conversation near road
+  { max: 65, color: "#FFA500", label: "Moderately Loud" }, // e.g., Heavy traffic, Honks, truck passing
+  { max: 79, color: "#FF0000", label: "Loud" }, // e.g., Construction site, busy intersection
+  { max: Infinity, color: "#990000", label: "Very Loud" }, // e.g., Highway traffic, heavy machinery
+];
+
+const getNoiseColor = (reading: number) => {
+  for (let category of noiseCategories) {
+    if (reading <= category.max) {
+      return category.color;
+    }
+  }
+  return noiseCategories[noiseCategories.length - 1].color;
+};
+
 const DualSoundBarProgress = ({
   currentReading,
 }: {
   currentReading: number;
 }) => {
   const halfReading = currentReading / 2;
+  const color = getNoiseColor(currentReading);
 
   return (
     <>
@@ -23,7 +41,7 @@ const DualSoundBarProgress = ({
           value={halfReading}
           size="220.5px"
           thickness="5.3px"
-          color="green.400"
+          color={color}
           trackColor="transparent"
           capIsRound
         />
@@ -42,7 +60,7 @@ const DualSoundBarProgress = ({
           value={halfReading}
           size="220.5px"
           thickness="5.3px"
-          color="green.400"
+          color={color}
           trackColor="transparent"
           capIsRound
         />

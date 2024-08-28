@@ -1,13 +1,22 @@
-import React, { useCallback, useEffect } from "react";
-import { Box, Text, Button } from "@chakra-ui/react";
+import React, { useCallback, useEffect, useState } from "react";
+import { Box, Text, Button, VStack, HStack } from "@chakra-ui/react";
 import DecibelDisplay from "../molecules/DecibelDisplay";
 import { useDecibelMeter } from "@/hooks/useDecibelMeter";
 import { useGPSTracking } from "@/hooks/useGPSTracking";
 import { useNoirCircuit } from "@/hooks/useNoirCircuit";
+import Greenfield from "@/evm/greenfield";
+import { useWallets } from "@privy-io/react-auth";
 
 interface DecibelMeterProps {
   showTip: () => void;
   actionRef: React.MutableRefObject<any>;
+}
+
+interface Stats {
+  max: number;
+  min: number;
+  avg: number;
+  time: string;
 }
 
 const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
@@ -21,59 +30,115 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
     captureAudio,
     stopRecording,
   } = useDecibelMeter();
-  const { updateLocationData, startTracking, stopTracking } = useGPSTracking();
+
+  const {
+    isPaused,
+    locationData,
+    addNoiseSample,
+    startTracking,
+    stopTracking,
+  } = useGPSTracking();
+
   const { generateProof, verifyProof } = useNoirCircuit();
+  const [finalStats, setFinalStats] = useState<Stats | null>(null);
+  const { wallets } = useWallets();
 
-  const mockProver = async () => {
-    const value = "52520,13405,48857,2352";
-    const [lat1, lon1, lat2, lon2] = value.split(",").map(Number);
-    if (isNaN(lat1) || isNaN(lon1) || isNaN(lat2) || isNaN(lon2)) {
-      throw new Error("Invalid input; please enter valid coordinates.");
-    }
-    console.log("this values", lat1, lon1, lat2, lon2);
-    const input = { lat1, lon1, lat2, lon2 };
-    console.log(input);
+  const getFinalData = useCallback(() => {
+    console.log("getFinalData called");
+    console.log("Returning location data:", locationData);
+    return locationData;
+  }, [locationData]);
 
-    const proof = await generateProof(input);
-    if (proof) {
-      await verifyProof(JSON.stringify(proof));
-    }
-    return;
+  const handleProof = async () => {
+    alert("Disabled in your location");
+  };
+  
+
+  const addToDB = async () => {
+    const provider = await wallets[0].getEthereumProvider();
+    const address = wallets[0].address;
+    const greenfield = new Greenfield(provider);
+    await greenfield.authenticate(address);
+    // Create a bucket
+    await greenfield.createBucket("my-bucket", address, false); // true for public, false for private
+    // Create and upload an object
+    const file = new File(["Hello, World!"], "hello.txt", {
+      type: "text/plain",
+    });
+
+    await greenfield.createAndUploadObject(
+      "my-bucket",
+      "hello.txt",
+      file,
+      address,
+      true
+    );
+    // Download an object
+    const downloadedFile = await greenfield.downloadObject(
+      "my-bucket",
+      "hello.txt",
+      address
+    );
+    console.log("downloaded file", downloadedFile);
   };
 
-  const handleSubmit = async () => {
-    // await mockProver();
-    // return;
-    if (isRecording) {
-      stopRecording();
-      stopTracking();
+  const handleSubmit = useCallback(async () => {
+    if (isPaused) {
+      handleProof;
       return;
     }
+    if (isRecording) {
+      await stopRecording();
+      await stopTracking();
+
+      // Store final statistics
+      setFinalStats({ max, min, avg, time });
+
+      // Get final location data
+      const finalLocationData = getFinalData();
+      console.log("Collected location data:", finalLocationData);
+      console.log("Final statistics:", { max, min, avg, time });
+      return;
+    }
+
     const disableTip = localStorage.getItem("disableTip");
     if (!disableTip) {
+      localStorage.setItem("disableTip", "true");
       actionRef.current = handleMeasure;
       showTip();
     } else {
       handleMeasure();
     }
-  };
+  }, [
+    isRecording,
+    stopRecording,
+    stopTracking,
+    max,
+    min,
+    avg,
+    time,
+    getFinalData,
+    actionRef,
+    showTip,
+  ]);
 
-  const handleMeasure = async () => {
-    startTracking();
-    captureAudio();
-  };
+  const handleMeasure = useCallback(async () => {
+    setFinalStats(null);
 
-  const updateLocation = useCallback(() => {
-    if (currentReading > 0) {
-      updateLocationData(currentReading);
+    try {
+      // Start GPS tracking and decibel measurement
+      await startTracking();
+      await captureAudio();
+    } catch (error) {
+      console.error("Error starting measurement:", error);
     }
-  }, [currentReading, updateLocationData]);
+  }, [startTracking, captureAudio]);
 
   useEffect(() => {
     if (isRecording) {
-      updateLocation();
+      addNoiseSample(currentReading); // Link decibel reading to the current GPS sample
     }
-  }, [isRecording, updateLocation]);
+  }, [isRecording, currentReading, addNoiseSample]);
 
   return (
     <>
@@ -90,12 +155,38 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
       <Box w="100%" px={[4, 2, 0]}>
         <DecibelDisplay
           currentReading={currentReading}
-          max={max}
-          min={min}
-          avg={avg}
-          time={time}
+          max={finalStats ? finalStats.max : max}
+          min={finalStats ? finalStats.min : min}
+          avg={finalStats ? finalStats.avg : avg}
+          time={finalStats ? finalStats.time : time}
+          paused={isPaused}
         />
       </Box>
+
+      {isPaused && finalStats && (
+        <Box w="100%" px={[4, 2, 0]}>
+          <HStack
+            textAlign={"left"}
+            mt={8}
+            spacing={4}
+            bg="white"
+            p={6}
+            w="100%"
+            borderRadius="lg"
+            shadow="md"
+            maxW="md"
+            mx="auto"
+            justifyContent={"space-between"}
+            display={"flex"}
+            alignItems={"center"}
+          >
+            <Text fontWeight={"semibold"} textAlign={"left"}>
+              Distance Covered:
+            </Text>
+            <Text textAlign={"left"}> 0km</Text>
+          </HStack>
+        </Box>
+      )}
 
       <Box
         w="100%"
@@ -105,6 +196,7 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
         alignItems={"center"}
         justifyContent={"center"}
         px={[4, 2, 0]}
+        mb={12}
       >
         <Button
           onClick={handleSubmit}
@@ -121,9 +213,24 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
           py={2}
           rightIcon={<img src="/measuring.png" alt="measure" />}
         >
-          {isRecording ? "Stop Measuring" : "Start Measuring"}
+          {isPaused && finalStats
+            ? "Claim Rewards"
+            : isRecording
+            ? "Stop Measuring"
+            : "Start Measuring"}
         </Button>
       </Box>
+
+      {/* {finalStats && (
+        <Box w="100%" mt={4} textAlign="center">
+          <Text>Recording Finished</Text>
+          <Text>Max: {finalStats.max} dB</Text>
+          <Text>Min: {finalStats.min} dB</Text>
+          <Text>Avg: {finalStats.avg} dB</Text>
+          <Text>Duration: {finalStats.time}</Text>
+          <Button>Claim Rewards</Button>
+        </Box>
+      )} */}
     </>
   );
 };

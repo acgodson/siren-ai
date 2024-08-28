@@ -1,6 +1,8 @@
 import Dashboard from "@/lib/Measurement";
 import Welcome from "@/lib/Welcome";
+import { revalidatePath } from "next/cache";
 import { cookies, headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default function App() {
   // Extract headers and cookies
@@ -21,6 +23,8 @@ export default function App() {
     if (!isPartiallyAuthenticated) {
       return <Welcome />;
     }
+    revalidatePath('/')
+    redirect('/')
   }
 
   // Conditional rendering based on the host

@@ -1,5 +1,6 @@
 import { Box, Text, VStack, HStack } from "@chakra-ui/react";
 import DualSoundBarProgress from "./dual-soundbar-progress";
+import { RefreshCwIcon } from "lucide-react";
 
 interface DecibelDisplayProps {
   currentReading: number;
@@ -7,6 +8,7 @@ interface DecibelDisplayProps {
   min: number;
   avg: number;
   time: string;
+  paused: boolean;
 }
 
 const DecibelDisplay: React.FC<DecibelDisplayProps> = ({
@@ -15,6 +17,7 @@ const DecibelDisplay: React.FC<DecibelDisplayProps> = ({
   min,
   avg,
   time,
+  paused,
 }) => {
   return (
     <VStack
@@ -36,8 +39,21 @@ const DecibelDisplay: React.FC<DecibelDisplayProps> = ({
           <Text>{max}</Text>
         </VStack>
         <VStack align="flex-end">
-          <Text fontWeight="bold">AVG</Text>
-          <Text>{avg}</Text>
+          <Text fontWeight="bold">{paused ? "Restart" : "AVG"}</Text>
+          {paused ? (
+            <Box
+              rounded={"full"}
+              p={1}
+              boxShadow={"sm"}
+              color="red.800"
+              bg="whitesmoke"
+              bgClip={"text"}
+            >
+              <RefreshCwIcon className="text-red-900" />
+            </Box>
+          ) : (
+            <Text>{avg}</Text>
+          )}
         </VStack>
       </HStack>
 
@@ -169,7 +185,7 @@ const DecibelDisplay: React.FC<DecibelDisplayProps> = ({
             </Box>
 
             <Text fontSize="xs" color="gray.500">
-              dB-A
+              dB-A {paused && "AVG"}
             </Text>
           </Box>
         </Box>
