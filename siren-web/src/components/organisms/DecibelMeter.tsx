@@ -52,37 +52,58 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
   const handleProof = async () => {
     alert("Disabled in your location");
   };
-  
 
   const addToDB = async () => {
+    //Wallet Info
     const provider = await wallets[0].getEthereumProvider();
     const address = wallets[0].address;
+
+    //  File info
+    const jsonData = {
+      key1: "value1",
+      key2: "value2",
+    };
+    const bucketName = "my-bucket";
+    const objectName = "my-data.json";
+
     const greenfield = new Greenfield(provider);
+    
+    //initiate greenfield (this will select the first storage provider)
+    await greenfield.initialize();
+
+    //authenticate greenfield
     await greenfield.authenticate(address);
+
     // Create a bucket
     await greenfield.createBucket("my-bucket", address, false); // true for public, false for private
-    // Create and upload an object
-    const file = new File(["Hello, World!"], "hello.txt", {
-      type: "text/plain",
-    });
 
-    await greenfield.createAndUploadObject(
-      "my-bucket",
-      "hello.txt",
-      file,
-      address,
-      true
-    );
+    // Create and upload an object
+    try {
+      await greenfield.createAndUploadJsonObject(
+        bucketName,
+        objectName,
+        jsonData,
+        address
+      );
+      console.log("JSON object uploaded successfully");
+    } catch (err) {
+      console.error("Failed to upload JSON object:", err);
+    }
+
     // Download an object
-    const downloadedFile = await greenfield.downloadObject(
-      "my-bucket",
-      "hello.txt",
-      address
-    );
-    console.log("downloaded file", downloadedFile);
+    // const downloadedFile = await greenfield.downloadObject(
+    //   "my-bucket",
+    //   "hello.txt",
+    //   address
+    // );
+    // console.log("downloaded file", downloadedFile);
   };
 
   const handleSubmit = useCallback(async () => {
+    addToDB();
+
+    return;
+
     if (isPaused) {
       handleProof;
       return;
