@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import { cn } from "../../utils";
 import Link from "next/link";
+import { usePrivy } from "@privy-io/react-auth";
+import { useEthContext } from "@/evm/EthContext";
 
 type Nav = {
   title: string;
@@ -24,8 +26,11 @@ const NavGroup = ({
   navClassName?: string;
 }) => {
   const initialActiveNav = propNavs.find((nav) => nav.isActive) || propNavs[0];
+  const { authenticated } = usePrivy();
+  const { handleLogin } = useEthContext();
   const [active, setActive] = useState<Nav>(initialActiveNav);
   const [navs, setNavs] = useState<Nav[]>(propNavs);
+
   const host = process.env.NEXT_PUBLIC_HOST;
 
   const moveSelectedNavToTop = (idx: number) => {
@@ -41,14 +46,18 @@ const NavGroup = ({
       {propNavs.map((nav, idx) => (
         <Link
           key={nav.title}
-          onClick={() => {
-            moveSelectedNavToTop(idx);
-          }}
+          onClick={
+            nav.href === "/" && !authenticated
+              ? handleLogin
+              : () => {
+                  moveSelectedNavToTop(idx);
+                }
+          }
           className={cn("relative px-4 py-2 rounded-full", navClassName)}
           style={{
             transformStyle: "preserve-3d",
           }}
-          href={nav.href === "/" ? `https://app.${host}` : nav.href}
+          href={nav.href === "/" ? `/home` : nav.href}
         >
           {active.value === nav.value && (
             <motion.div

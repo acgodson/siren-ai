@@ -62,30 +62,34 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
 
   const handleProof = async () => {
     // alert("Disabled in your location");
-    let objectName;
+    let objectName: string | null = null;
+
     // Get final location data
     const finalLocationData = getFinalData();
     console.log("data ready for upload", finalLocationData);
 
-    const data = await readContract("getUniqueObjectName", []);
-    console.log("new object name", data);
-
-    return;
-
+    try {
+      const res: any = await readContract("getUniqueObjectName", []);
+      console.log("selected new name", res);
+      objectName = res;
+    } catch (e) {
+      console.log(e);
+    }
     if (!objectName) {
-      console.log("error, unable to retrieve object name from contract");
+      console.log("object name unassigned");
       return;
     }
-
     // upload object
     const res = await uploadJsonObject(objectName, [...finalLocationData]);
+    console.log(res);
   };
 
   const handleSubmit = useCallback(async () => {
     if (isPaused) {
-      handleProof;
+      await handleProof();
       return;
     }
+
     if (isRecording) {
       await stopRecording();
       await stopTracking();
@@ -93,8 +97,11 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
       // Store final statistics
       setFinalStats({ max, min, avg, time });
 
-      console.log("paused location data:", locationData);
+      // console.log("paused location data:", locationData);
       console.log("paused statistics:", { max, min, avg, time });
+      const finalLocationData = getFinalData();
+      console.log("data ready for upload", finalLocationData);
+      return;
     }
 
     const disableTip = localStorage.getItem("disableTip");

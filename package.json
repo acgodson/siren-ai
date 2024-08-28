@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "prebuild": "make compile && cd siren-web && pnpm i",
-    "dev": "make compile &&  npm run dev --workspaces --if-present"
+    "dev": "make compile &&  cd siren-web && npm run dev"
   },
   "type": "module",
   "workspaces": [

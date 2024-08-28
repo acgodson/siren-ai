@@ -23,7 +23,7 @@ export const useNoirCircuit = () => {
       try {
         const module = await import("@noir-lang/backend_barretenberg");
         const response: any = await fetch(
-          "circuits/check_distance/target/check_distance.json"
+          "/circuits/check_distance/target/check_distance.json"
         );
         if (response.ok) {
           const circuit = await response.json();

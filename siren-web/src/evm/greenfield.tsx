@@ -50,7 +50,7 @@ class Greenfield {
     this.provider = provider;
     this.rs = new ReedSolomon();
     this.useBackendBroadcast = true; //options.useBackendBroadcast || false;
-    this.backendUrl = "https://siren-greenfield.vercel.app/";
+    this.backendUrl = "";
   }
 
   async initialize(): Promise<any> {

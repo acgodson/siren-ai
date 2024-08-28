@@ -170,11 +170,11 @@ export const useGPSTracking = () => {
     };
   }, [isTracking, checkPositionChange]);
 
-  useEffect(() => {
-    if (isPaused) {
-      console.log("isPaused, current location data:", locationData);
-    }
-  }, [isPaused, locationData]);
+  // useEffect(() => {
+  //   if (isPaused) {
+  //     console.log("isPaused, current location data:", locationData);
+  //   }
+  // }, [isPaused, locationData]);
 
   return {
     isPaused,

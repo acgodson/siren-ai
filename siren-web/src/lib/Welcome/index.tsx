@@ -17,11 +17,20 @@ import { useAccount } from "wagmi";
 
 import { useEthContext } from "../../evm/EthContext";
 import Header from "@/components/organisms/header";
+import { useRouter } from "next/navigation";
 
 function Welcome() {
-  const { isConnected, address } = useAccount();
+  // const { isConnected, address } = useAccount();
   const { user, authenticated } = usePrivy();
   const { handleLogin, toggleAccountModal } = useEthContext();
+  const router = useRouter();
+
+  // useEffect(() => {
+  //   if (authenticated) {
+  //     router.push("/home");
+  //   }
+  // }, [authenticated]);
+
   const features = [
     {
       title: "Noise Measurement",

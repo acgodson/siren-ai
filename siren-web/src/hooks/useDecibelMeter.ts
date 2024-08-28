@@ -100,10 +100,21 @@ export const useDecibelMeter = () => {
       audioContextRef.current.close();
       audioContextRef.current = null;
     }
+
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
+
+    if (sourceRef.current) {
+      sourceRef.current.disconnect();
+      sourceRef.current = null;
+    }
+    if (analyserRef.current) {
+      analyserRef.current.disconnect();
+      analyserRef.current = null;
+    }
+
     setIsRecording(false);
 
     // Ensure final calculations are correct
