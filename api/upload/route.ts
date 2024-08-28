@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Client } from "@bnb-chain/greenfield-js-sdk";
 
-export async function POST(req: NextRequest) {
+const client = Client.create(
+  "https://gnfd-testnet-fullnode-tendermint-ap.bnbchain.org",
+  "5600"
+);
+export const POST = async (req: NextRequest) => {
   try {
     const { bucketName, objectName, fileData, txnHash, address } =
       await req.json();
-
-    const client = Client.create(
-      "https://gnfd-testnet-fullnode-tendermint-ap.bnbchain.org",
-      "5600"
-    );
 
     const buffer = Buffer.from(fileData, "base64");
 
@@ -36,4 +35,10 @@ export async function POST(req: NextRequest) {
     console.error("Failed to upload object:", error);
     return new NextResponse("Failed to upload object", { status: 500 });
   }
-}
+};
+
+export const GET = async () => {
+  return new NextResponse("This endpoint only accepts POST requests", {
+    status: 405,
+  });
+};

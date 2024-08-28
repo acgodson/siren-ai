@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Client } from "@bnb-chain/greenfield-js-sdk";
 
-export async function POST(req: NextRequest) {
+const client = Client.create(
+  "https://gnfd-testnet-fullnode-tendermint-ap.bnbchain.org",
+  "5600"
+);
+
+export const POST = async (req: NextRequest) => {
   try {
     const { txData, operationType, operationData } = await req.json();
-
-    const client = Client.create(
-      "https://gnfd-testnet-fullnode-tendermint-ap.bnbchain.org",
-      "5600"
-    );
 
     let tx;
 
@@ -42,10 +42,10 @@ export async function POST(req: NextRequest) {
     console.error("Failed to broadcast transaction:", error);
     return new NextResponse("Failed to broadcast transaction", { status: 500 });
   }
-}
+};
 
-export async function GET() {
+export const GET = async () => {
   return new NextResponse("This endpoint only accepts POST requests", {
     status: 405,
   });
-}
+};

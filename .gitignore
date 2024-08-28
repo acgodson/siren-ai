@@ -1,4 +1,5 @@
 	.DS_Store
+	.vscode
 
 siren-web/.env
 .DS_Store
