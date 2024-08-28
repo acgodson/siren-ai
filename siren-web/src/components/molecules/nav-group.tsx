@@ -57,7 +57,13 @@ const NavGroup = ({
           style={{
             transformStyle: "preserve-3d",
           }}
-          href={nav.href === "/" ? `/home` : nav.href}
+          href={
+            nav.href === "/" && !authenticated
+              ? "#"
+              : nav.href === "/"
+              ? `/home`
+              : nav.href
+          }
         >
           {active.value === nav.value && (
             <motion.div
