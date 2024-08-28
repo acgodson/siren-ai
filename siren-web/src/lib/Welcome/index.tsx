@@ -18,7 +18,6 @@ import { useAccount } from "wagmi";
 import { useEthContext } from "../../evm/EthContext";
 import Header from "@/components/organisms/header";
 
-
 function Welcome() {
   const { isConnected, address } = useAccount();
   const { user, authenticated } = usePrivy();
@@ -125,7 +124,7 @@ Benefit form user-contributed routes and noise data.`,
                   }}
                   px={[3, 3, 12]}
                   zIndex={"tooltip"}
-                  // onClick={handleLogin}
+                  onClick={handleLogin}
                   rightIcon={<img src="/measuring.png" alt="measuring" />}
                 >
                   Start Measuring
@@ -214,7 +213,7 @@ Benefit form user-contributed routes and noise data.`,
           <Box mt={12} w="100%">
             {howItWorks.map((x, i) => (
               <Flex
-              key={i}
+                key={i}
                 my={12}
                 w="full"
                 h={["fit-content", "fit-content", "60vh"]}
@@ -266,7 +265,7 @@ Benefit form user-contributed routes and noise data.`,
                       bgGradient: "linear(to-r, #17101C, #D82B3C)",
                     }}
                     w="fit-content"
-                    // onClick={handleLogin}
+                    onClick={handleLogin}
                     rightIcon={<img src={`/${x.icon}`} alt="measuring" />}
                   >
                     {x.action}

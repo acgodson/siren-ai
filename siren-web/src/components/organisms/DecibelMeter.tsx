@@ -4,8 +4,9 @@ import DecibelDisplay from "../molecules/DecibelDisplay";
 import { useDecibelMeter } from "@/hooks/useDecibelMeter";
 import { useGPSTracking } from "@/hooks/useGPSTracking";
 import { useNoirCircuit } from "@/hooks/useNoirCircuit";
-import Greenfield from "@/evm/greenfield";
 import { useWallets } from "@privy-io/react-auth";
+import { useGreenfield } from "@/hooks/useGreenfield";
+import { readContract } from "@/evm/config";
 
 interface DecibelMeterProps {
   showTip: () => void;
@@ -40,7 +41,17 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
   } = useGPSTracking();
 
   const { generateProof, verifyProof } = useNoirCircuit();
+
+  const {
+    loading,
+    address,
+    uploadJsonObject,
+    downloadJsonObject,
+    BUCKET_NAME,
+  } = useGreenfield();
+
   const [finalStats, setFinalStats] = useState<Stats | null>(null);
+
   const { wallets } = useWallets();
 
   const getFinalData = useCallback(() => {
@@ -50,63 +61,27 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
   }, [locationData]);
 
   const handleProof = async () => {
-    alert("Disabled in your location");
-  };
+    // alert("Disabled in your location");
+    let objectName;
+    // Get final location data
+    const finalLocationData = getFinalData();
+    console.log("data ready for upload", finalLocationData);
 
-  const addToDB = async () => {
-    //Wallet Info
-    const provider = await wallets[0].getEthereumProvider();
-    const address = wallets[0].address;
+    const data = await readContract("getUniqueObjectName", []);
+    console.log("new object name", data);
 
-    //  File info
-    const jsonData = {
-      key1: "value1",
-      key2: "value2",
-    };
-    const bucketName = "my-bucket";
-    const objectName = "my-data.json";
-
-    const greenfield = new Greenfield(provider);
-
-    //initiate greenfield (this will select the first storage provider)
-    const sProvider = await greenfield.initialize();
-
-    console.log("storage provider found: ", provider);
     return;
 
-    //authenticate greenfield
-    await greenfield.authenticate(address);
-
-    // Create a bucket
-    await greenfield.createBucket("my-bucket", address, false); // true for public, false for private
-
-    // Create and upload an object
-    try {
-      await greenfield.createAndUploadJsonObject(
-        bucketName,
-        objectName,
-        jsonData,
-        address
-      );
-      console.log("JSON object uploaded successfully");
-    } catch (err) {
-      console.error("Failed to upload JSON object:", err);
+    if (!objectName) {
+      console.log("error, unable to retrieve object name from contract");
+      return;
     }
 
-    // Download an object
-    // const downloadedFile = await greenfield.downloadObject(
-    //   "my-bucket",
-    //   "hello.txt",
-    //   address
-    // );
-    // console.log("downloaded file", downloadedFile);
+    // upload object
+    const res = await uploadJsonObject(objectName, [...finalLocationData]);
   };
 
   const handleSubmit = useCallback(async () => {
-    addToDB();
-
-    return;
-
     if (isPaused) {
       handleProof;
       return;
@@ -118,11 +93,8 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
       // Store final statistics
       setFinalStats({ max, min, avg, time });
 
-      // Get final location data
-      const finalLocationData = getFinalData();
-      console.log("Collected location data:", finalLocationData);
-      console.log("Final statistics:", { max, min, avg, time });
-      return;
+      console.log("paused location data:", locationData);
+      console.log("paused statistics:", { max, min, avg, time });
     }
 
     const disableTip = localStorage.getItem("disableTip");
@@ -238,7 +210,7 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
           rightIcon={<img src="/measuring.png" alt="measure" />}
         >
           {isPaused && finalStats
-            ? "Claim Rewards"
+            ? "Claim Points"
             : isRecording
             ? "Stop Measuring"
             : "Start Measuring"}

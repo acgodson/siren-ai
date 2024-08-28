@@ -1,7 +1,5 @@
-
 import { useState, useEffect } from "react";
 import Greenfield from "@/client/greenfield";
-
 
 import { useWallets } from "@privy-io/react-auth";
 
@@ -27,7 +25,7 @@ export const Demo = () => {
     key2: "value2",
     key3: "value3",
   };
-  const bucketName = "my-bucket83775";
+  const bucketName = "bnb-demo01";
   const objectName = "your-data.json";
 
   const init = async () => {

@@ -1,8 +1,9 @@
 /* eslint-disable */
-import { createClient, http, defineChain } from "viem";
+import { createClient, http, defineChain, createPublicClient } from "viem";
 import { bscTestnet, bscGreenfield } from "viem/chains";
 import { createConfig } from "@privy-io/wagmi";
 import { Client } from "@bnb-chain/greenfield-js-sdk";
+import RewardsManagerABI from "@/evm/RewardsManagerABI.json";
 
 export const privyConfig = {
   loginMethods: ["google", "email"],
@@ -33,3 +34,18 @@ export const wagmiConfig = createConfig({
   },
 });
 
+export const readContract = async (method: string, args: any[]) => {
+  const publicClient = createPublicClient({
+    chain: bscTestnet,
+    transport: http(),
+  });
+  const abi = RewardsManagerABI;
+
+  const data = await publicClient.readContract({
+    address: process.env.NEXT_PUBLIC_CONTRACT as `0x${string}`,
+    abi: abi,
+    functionName: method,
+    args: args,
+  });
+  return data;
+};

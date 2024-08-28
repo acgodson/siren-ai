@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import Greenfield from "@/evm/greenfield";
 import { useWallets } from "@privy-io/react-auth";
 
-const BUCKET_NAME = "my-bucket83775"; // Constant bucket name
+const BUCKET_NAME = "bnb-demo01";
 
 export const useGreenfield = () => {
   const { wallets } = useWallets();
