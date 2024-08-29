@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-export default function App() {
+export default function Home() {
   // Extract headers and cookies
   const headersList = headers();
   const cookieStore = cookies();

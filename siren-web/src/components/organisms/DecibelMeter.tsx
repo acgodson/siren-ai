@@ -187,9 +187,7 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
 
   const handleMeasure = useCallback(async () => {
     setFinalStats(null);
-
     try {
-      // Start GPS tracking and decibel measurement
       await startTracking();
       await captureAudio();
     } catch (error) {
@@ -199,7 +197,7 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
 
   useEffect(() => {
     if (isRecording) {
-      addNoiseSample(currentReading); // Link decibel reading to the current GPS sample
+      addNoiseSample(currentReading);
     }
   }, [isRecording, currentReading, addNoiseSample]);
 

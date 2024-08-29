@@ -2,8 +2,6 @@
 import { useRef } from "react";
 import { VStack, useDisclosure } from "@chakra-ui/react";
 import AppWrapper from "@/components/template/app-wrapper";
-
-// import DecibelMeter from "@/components/organisms/NoiseDetector";
 import HowToMeasureDialog from "@/components/molecules/how-to-measure";
 import DecibelMeter from "@/components/organisms/DecibelMeter";
 
