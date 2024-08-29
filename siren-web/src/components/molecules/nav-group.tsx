@@ -42,7 +42,7 @@ const NavGroup = ({
   };
 
   return (
-    <div className="flex flex-row items-center justify-start [perspective:1000px] relative overflow-auto sm:overflow-visible no-visible-scrollbar max-w-full">
+    <div className="flex flex-col sm:flex-row py-8 sm:py-0 items-center justify-start [perspective:1000px] relative overflow-auto sm:overflow-visible no-visible-scrollbar max-w-full">
       {propNavs.map((nav, idx) => (
         <Link
           key={nav.title}
@@ -69,10 +69,6 @@ const NavGroup = ({
             <motion.div
               layoutId="clickedbutton"
               transition={{ type: "spring", bounce: 0.3, duration: 0.6 }}
-              // className={cn(
-              //   "absolute inset-0 bg-gray-200 dark:bg-zinc-800 rounded-full ",
-              //   activeNavClassName
-              // )}
             />
           )}
 

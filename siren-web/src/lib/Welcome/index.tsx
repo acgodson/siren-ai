@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   Flex,
   Text,
@@ -13,23 +12,14 @@ import {
   Center,
 } from "@chakra-ui/react";
 import { usePrivy } from "@privy-io/react-auth";
-import { useAccount } from "wagmi";
 
 import { useEthContext } from "../../evm/EthContext";
 import Header from "@/components/organisms/header";
-import { useRouter } from "next/navigation";
 
 function Welcome() {
-  // const { isConnected, address } = useAccount();
-  const { user, authenticated } = usePrivy();
   const { handleLogin, toggleAccountModal } = useEthContext();
-  const router = useRouter();
 
-  // useEffect(() => {
-  //   if (authenticated) {
-  //     router.push("/home");
-  //   }
-  // }, [authenticated]);
+
 
   const features = [
     {
@@ -132,7 +122,7 @@ Benefit form user-contributed routes and noise data.`,
                     bgGradient: "linear(to-r, #17101C, #D82B3C)",
                   }}
                   px={[3, 3, 12]}
-                  zIndex={"tooltip"}
+                  zIndex={[1,1,"tooltip"]}
                   onClick={handleLogin}
                   rightIcon={<img src="/measuring.png" alt="measuring" />}
                 >

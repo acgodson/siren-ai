@@ -14,7 +14,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  HStack,
   VStack,
   InputGroup,
   InputLeftAddon,
@@ -24,10 +23,8 @@ import { ExternalLink } from "lucide-react";
 import { useAccount } from "wagmi";
 import { useWallets } from "@privy-io/react-auth";
 
-import BearAvatar from "../atoms/bear-avatar";
-import { shortenAddress } from "../../utils";
 
-export default function ProfileDialog() {
+export default function ChatDialog() {
   const { user } = usePrivy();
   const { wallets } = useWallets();
   const { address } = useAccount();

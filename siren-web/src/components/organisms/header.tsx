@@ -5,6 +5,8 @@ import NavGroup from "../molecules/nav-group";
 import { useAccount } from "wagmi";
 import { useEthContext } from "@/evm/EthContext";
 import { shortenAddress } from "@/utils";
+import ChatDialog from "../molecules/chat-dialog";
+import NavDrawer from "../molecules/nav-drawer";
 
 const Header = ({ className }: { className?: string }) => {
   const { handleLogin } = useEthContext();
@@ -100,7 +102,11 @@ const Header = ({ className }: { className?: string }) => {
         )}
       </Box>
 
-      {/* <ProfileDialog /> */}
+      <Box display={["block", "block", "none"]}>
+        <NavDrawer />
+      </Box>
+
+      <ChatDialog />
     </Box>
   );
 };
