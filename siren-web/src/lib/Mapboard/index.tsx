@@ -17,6 +17,7 @@ import {
   LayoutFooter,
 } from "../../components/template/dashboard-wrapper";
 import NoiseLevelKey from "@/components/molecules/noiseLevelKey";
+import { useEthContext } from "@/evm/EthContext";
 
 const roadNoiseGeoJsonData = {
   type: "FeatureCollection",
@@ -55,6 +56,9 @@ const roadNoiseGeoJsonData = {
 
 function Mapboard() {
   const mapboxToken = process.env.NEXT_PUBLIC_MAP_API;
+  const { isAccountModalOpen, toggleAccountModal, handleLogout } =
+    useEthContext();
+
   const [fromlocation, setFromLocation] = useState<any>("");
   // const [tolocation, setToLocation] = useState<any>("");
   const [showAutocomplete, setShowAutocomplete] = useState(false);
@@ -101,8 +105,6 @@ function Mapboard() {
 
   useEffect(() => {
     if (!mapboxToken) return;
-
-    console.log(mapboxToken);
     //@ts-ignore
     if (mapboxgl) {
       (mapboxgl as any).accessToken = mapboxToken;
@@ -122,7 +124,6 @@ function Mapboard() {
       const labelLayers = [
         "country-label",
         "state-label",
-        "settlement-label",
         "settlement-subdivision-label",
         "airport-label",
         "poi-label",
@@ -137,19 +138,6 @@ function Mapboard() {
         map.setPaintProperty(layer, "text-color", "#CCCCCC");
         map.setPaintProperty(layer, "text-halo-color", "#FFFFFF");
       });
-      // map.setPaintProperty("water", "fill-color", "#EAEAEA");
-      // map.setPaintProperty("landuse", "fill-color", "#F5F5F5");
-      // map.setPaintProperty("building", "fill-color", "#D3D3D3");
-
-      // Neutralize major link roads
-      map.setPaintProperty("road-major-link", "line-color", "#D3D3D3");
-      map.setPaintProperty("road-secondary-tertiary", "line-color", "#EAEAEA");
-      // map.setPaintProperty("road-primary", "line-color", "#EAEAEA");
-      // map.setPaintProperty("road-motorway-trunk", "line-color", "#EAEAEA");
-
-      // map.setPaintProperty("road-network", "line-opacity", 0.2);
-
-      map.setFilter("road-label", ["!=", "class", "motorway"]);
 
       map.addSource("roadNoiseData", {
         type: "geojson",
@@ -245,6 +233,7 @@ function Mapboard() {
           }}
           className="py-5 cursor-pointer"
           rightIcon={<img src="/toggle-ai.png" alt="toggle-AI" />}
+          onClick={toggleAccountModal}
         >
           AI
         </Button>,

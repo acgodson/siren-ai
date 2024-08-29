@@ -78,8 +78,6 @@ export default function HowToMeasureDialog({
             </Text>
           </ModalHeader>
 
-          {/* <ModalCloseButton className="text-[#333]" /> */}
-
           <ModalBody mx={1} bg="white">
             <Flex direction="column" color="#333" gap="4">
               <Box p="4" bg="whiteAlpha" rounded="md">
