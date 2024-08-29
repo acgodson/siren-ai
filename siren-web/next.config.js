@@ -1,5 +1,6 @@
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
+const webpack = require("webpack"); // Import webpack to use NormalModuleReplacementPlugin
 
 const _getPublicEnv = (prefix) => {
   const envs = process.env;
@@ -19,19 +20,29 @@ const nextConfig = {
   reactStrictMode: false,
   trailingSlash: true,
   publicRuntimeConfig: {
-    ..._getPublicEnv('NEXT_PUBLIC_'),
+    ..._getPublicEnv("NEXT_PUBLIC_"),
   },
   eslint: {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
-  webpack: (config) => {
-    config.resolve.fallback = {
-      fs: false,
-      net: false,
-      tls: false,
-    };
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.resolve.fallback = {
+        fs: false,
+        dns: false,
+        net: false,
+        tls: false,
+      };
+
+      config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(
+          /^hexoid$/,
+          require.resolve('hexoid/dist/index.js')
+        )
+      );
+    }
 
     config.plugins.push(
       new CopyWebpackPlugin({

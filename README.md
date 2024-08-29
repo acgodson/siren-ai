@@ -6,6 +6,29 @@
 
 ![decibelmeter](<siren-web/public/Screen Recording 2024-08-28 at 21.05.14.gif>)
 
+### Submitting Verified Noise Data
+
+```typescript
+const handleSubmission = async () => {
+
+    try {
+      // Retrieves final location readings
+      const finalLocationData = getFinalData();
+
+      // Verifies ZK-proof with distance circuit
+      const zkProofResult = await mockZKProof(finalLocationData);
+
+      // Fetchs next unique object name from the contract
+      const objectName = await readContract("getUniqueObjectName", []);
+
+      // Uploads location data to Greenfield
+      await uploadJsonObject(objectName, finalLocationData);
+
+      // Assigns reward points to the user
+      const finalRes = await assignPoints(wallets[0].address);
+     ....
+```
+
 ### Getting Started
 
 1. **Compile Noir Circuit and Install Dependencies:**

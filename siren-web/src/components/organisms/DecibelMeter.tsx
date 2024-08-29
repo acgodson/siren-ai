@@ -1,5 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Text, Button, VStack, HStack } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Button,
+  HStack,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import DecibelDisplay from "../molecules/DecibelDisplay";
 import { useDecibelMeter } from "@/hooks/useDecibelMeter";
 import { useGPSTracking } from "@/hooks/useGPSTracking";
@@ -7,6 +14,10 @@ import { useNoirCircuit } from "@/hooks/useNoirCircuit";
 import { useWallets } from "@privy-io/react-auth";
 import { useGreenfield } from "@/hooks/useGreenfield";
 import { readContract } from "@/evm/config";
+import { assignPoints, mockZKProof } from "@/evm/client";
+import StatusDialog from "../molecules/status-dialog";
+import { useEthContext } from "@/evm/EthContext";
+import { useRouter } from "next/navigation";
 
 interface DecibelMeterProps {
   showTip: () => void;
@@ -42,17 +53,20 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
 
   const { generateProof, verifyProof } = useNoirCircuit();
 
-  const {
-    loading,
-    address,
-    uploadJsonObject,
-    downloadJsonObject,
-    BUCKET_NAME,
-  } = useGreenfield();
-
-  const [finalStats, setFinalStats] = useState<Stats | null>(null);
+  const { uploadJsonObject, downloadJsonObject } = useGreenfield();
 
   const { wallets } = useWallets();
+  const { handleLogin } = useEthContext();
+  const router = useRouter();
+  const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [finalStats, setFinalStats] = useState<Stats | null>(null);
+  const [alertMessage, setAlertMessage] = useState<string>("");
+
+  const log = (message: string) => {
+    console.log(message);
+    setAlertMessage((prev) => prev + "\n" + message);
+  };
 
   const getFinalData = useCallback(() => {
     console.log("getFinalData called");
@@ -61,32 +75,78 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
   }, [locationData]);
 
   const handleProof = async () => {
-    // alert("Disabled in your location");
-    let objectName: string | null = null;
-
-    // Get final location data
-    const finalLocationData = getFinalData();
-    console.log("data ready for upload", finalLocationData);
+    onOpen();
+    setAlertMessage("Starting proof submission...");
 
     try {
-      const res: any = await readContract("getUniqueObjectName", []);
-      console.log("selected new name", res);
-      objectName = res;
-    } catch (e) {
+      // Get final location data
+      log("Retrieving final location data");
+      const finalLocationData = getFinalData();
+
+      // Verify ZK-proof distance (mock)
+      const zkProofResult = await mockZKProof(finalLocationData, log, toast);
+      if (!zkProofResult) {
+        log("ZK-proof verification failed");
+        return;
+      }
+
+      const objectName: string | null | any = await readContract(
+        "getUniqueObjectName",
+        []
+      );
+  
+      if (!objectName) {
+        console.log("object name unassigned");
+        return;
+      }
+
+      // Upload object
+      log("Uploading location data to Greenfield");
+      await uploadJsonObject(objectName, finalLocationData);
+      log("Data uploaded successfully");
+
+      // Assign points to the user
+      log("Assigning points to user");
+      const finalRes = await assignPoints(wallets[0].address);
+      log(`Points assigned: ${finalRes}`);
+
+      toast({
+        title: "Success",
+        description: "Proof submitted and points assigned successfully!",
+        status: "success",
+        duration: 5000,
+        position: "top",
+        isClosable: true,
+      });
+      resetMeter()
+    } catch (e: any) {
       console.log(e);
+      log(`Error in proof submission: ${e.message}`);
+      toast({
+        title: "Error",
+        description: "An error occurred during proof submission.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      onClose();
     }
-    if (!objectName) {
-      console.log("object name unassigned");
-      return;
-    }
-    // upload object
-    const res = await uploadJsonObject(objectName, [...finalLocationData]);
-    console.log(res);
+  };
+
+  const resetMeter = () => {
+    // isPaused
+    setFinalStats(null);
+    setTimeout(() => router.refresh(), 2000);
   };
 
   const handleSubmit = useCallback(async () => {
     if (isPaused) {
-      await handleProof();
+      if (wallets && wallets.length > 0) {
+        await handleProof();
+      } else {
+        handleLogin();
+      }
       return;
     }
 
@@ -98,9 +158,9 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
       setFinalStats({ max, min, avg, time });
 
       // console.log("paused location data:", locationData);
-      console.log("paused statistics:", { max, min, avg, time });
-      const finalLocationData = getFinalData();
-      console.log("data ready for upload", finalLocationData);
+      // console.log("paused statistics:", { max, min, avg, time });
+      // const finalLocationData = getFinalData();
+      // console.log("data ready for upload", finalLocationData);
       return;
     }
 
@@ -224,16 +284,11 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
         </Button>
       </Box>
 
-      {/* {finalStats && (
-        <Box w="100%" mt={4} textAlign="center">
-          <Text>Recording Finished</Text>
-          <Text>Max: {finalStats.max} dB</Text>
-          <Text>Min: {finalStats.min} dB</Text>
-          <Text>Avg: {finalStats.avg} dB</Text>
-          <Text>Duration: {finalStats.time}</Text>
-          <Button>Claim Rewards</Button>
-        </Box>
-      )} */}
+      <StatusDialog
+        isOpen={isOpen}
+        onClose={onClose}
+        alertMessage={alertMessage}
+      />
     </>
   );
 };

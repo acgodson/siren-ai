@@ -78,9 +78,9 @@ export const useGPSTracking = () => {
   }, [currentPosition, noiseSamples]);
 
   const checkPositionChange = useCallback(async () => {
-    console.log("checkPositionChange called");
-    console.log("Current position:", currentPosition);
-    console.log("Last recorded position:", lastRecordedPosition);
+    // console.log("checkPositionChange called");
+    // console.log("Current position:", currentPosition);
+    // console.log("Last recorded position:", lastRecordedPosition);
 
     if (currentPosition) {
       if (lastRecordedPosition) {
@@ -91,13 +91,13 @@ export const useGPSTracking = () => {
           currentPosition.lng
         );
         if (distance >= DISTANCE_THRESHOLD) {
-          console.log("Distance threshold exceeded. Updating location data.");
+          // console.log("Distance threshold exceeded. Updating location data.");
           updateLocationData();
           setNoiseSamples([]);
         }
       } else {
         // First position recorded
-        console.log("First position recorded. Updating location data.");
+        // console.log("First position recorded. Updating location data.");
         updateLocationData();
       }
     }
@@ -135,7 +135,7 @@ export const useGPSTracking = () => {
 
   const addNoiseSample = useCallback(
     (noiseLevel: number) => {
-      console.log("addNoiseSample called with level:", noiseLevel);
+      // console.log("addNoiseSample called with level:", noiseLevel);
 
       if (!currentPosition) {
         return;
@@ -143,7 +143,7 @@ export const useGPSTracking = () => {
       setNoiseSamples((prevSamples) => {
         if (prevSamples.length < MAX_SAMPLES_PER_POINT) {
           const newSamples = [...prevSamples, noiseLevel];
-          console.log("Updated noise samples:", newSamples);
+          // console.log("Updated noise samples:", newSamples);
           if (newSamples.length === MAX_SAMPLES_PER_POINT) {
             setIsMaxSamplesReached(true);
           }
