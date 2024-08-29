@@ -94,16 +94,16 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
         "getUniqueObjectName",
         []
       );
-  
+
       if (!objectName) {
         console.log("object name unassigned");
         return;
       }
 
       // Upload object
-      log("Uploading location data to Greenfield");
-      await uploadJsonObject(objectName, finalLocationData);
-      log("Data uploaded successfully");
+      // log("Uploading location data to Greenfield");
+      // await uploadJsonObject(objectName, finalLocationData);
+      // log("Data uploaded successfully");
 
       // Assign points to the user
       log("Assigning points to user");
@@ -118,7 +118,7 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
         position: "top",
         isClosable: true,
       });
-      resetMeter()
+      resetMeter();
     } catch (e: any) {
       console.log(e);
       log(`Error in proof submission: ${e.message}`);
@@ -137,7 +137,7 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
   const resetMeter = () => {
     // isPaused
     setFinalStats(null);
-    setTimeout(() => router.refresh(), 2000);
+    setTimeout(() => router.push("/profile"), 2000);
   };
 
   const handleSubmit = useCallback(async () => {
