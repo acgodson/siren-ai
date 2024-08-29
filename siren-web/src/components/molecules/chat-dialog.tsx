@@ -14,15 +14,9 @@ import {
   Center,
   Image,
 } from "@chakra-ui/react";
-import { usePrivy } from "@privy-io/react-auth";
-import { useAccount } from "wagmi";
-import { useWallets } from "@privy-io/react-auth";
 import QueryInterface from "@/lib/Chat";
 
 export default function ChatDialog() {
-  const { user, authenticated } = usePrivy();
-  const { wallets } = useWallets();
-  const { address } = useAccount();
   const { isAccountModalOpen, handleLogin, toggleAccountModal, handleLogout } =
     useEthContext();
   const [id, setId] = useState<string | null>(null);
@@ -31,10 +25,6 @@ export default function ChatDialog() {
 
   const handleSubmit = () => {
     setLoading(true);
-    // if (!authenticated) {
-    //   toggleAccountModal();
-    //   handleLogin();
-    // }
     setTimeout(() => setLoading(false), 10000);
 
     setPageIndex(true);
@@ -49,8 +39,8 @@ export default function ChatDialog() {
         size={pageIndex ? "2xl" : "md"}
       >
         <ModalOverlay
-          bg="whiteAlpha.200"
-          backdropFilter="blur(8px)"
+          bg="blackAlpha.800"
+          backdropFilter="blur(7px)"
           zIndex="40"
         />
 
@@ -82,13 +72,13 @@ export default function ChatDialog() {
             <Text
               mt={4}
               fontSize={["2xl", "2xl", "4xl"]}
-              textAlign={pageIndex ? "center" : "left"}
+              textAlign={!pageIndex ? "center" : "left"}
               color="#333"
               bgGradient="linear(to-r, #D82B3C, #17101C)"
               bgClip={"text"}
               fontWeight="bold"
             >
-              {pageIndex ? "How can I assist you" : "      Meet Siren`s AI"}
+              {pageIndex ? "How can I assist you" : " Meet Siren`s AI"}
             </Text>
           </ModalHeader>
 
@@ -148,7 +138,7 @@ export default function ChatDialog() {
                     an absolute reflection of noise pollution in the recorded
                     locations.
                   </Text>
-                </Box>{" "}
+                </Box>
               </>
             )}
           </ModalFooter>

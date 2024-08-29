@@ -162,7 +162,7 @@ export function PlaceholdersAndVanishInput({
   return (
     <form
       className={cn(
-        "w-full relative mx-auto bg-white dark:bg-[#014338] h-12 rounded-full overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200",
+        "w-full relative mx-auto bg-white dark:bg-[#736e6f] h-12 rounded-full overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200",
         value && "bg-gray-50"
       )}
       onSubmit={handleSubmit}
@@ -194,7 +194,7 @@ export function PlaceholdersAndVanishInput({
       <button
         disabled={!value || disabled}
         type="submit"
-        className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full disabled:bg-gray-100 bg-[#006958] dark:bg-[#006958] dark:disabled:bg-[#006958] transition duration-200 flex items-center justify-center"
+        className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full disabled:bg-gray-100 bg-[#736e6f] dark:bg-[#323231] dark:disabled:bg-[#323231] transition duration-200 flex items-center justify-center"
       >
         <motion.svg
           xmlns="http://www.w3.org/2000/svg"
@@ -207,6 +207,9 @@ export function PlaceholdersAndVanishInput({
           strokeLinecap="round"
           strokeLinejoin="round"
           className="text-gray-300 h-4 w-4"
+          style={{
+            cursor: "pointer",
+          }}
         >
           <path stroke="none" d="M0 0h24v24H0z" fill="none" />
           <motion.path
