@@ -1,18 +1,15 @@
-
 import axios from "axios";
 import { keccak256, toHex } from "viem";
 import lighthouse from "@lighthouse-web3/sdk";
 
-
-
 export async function fetchQueryResponse(
   sms: any,
   apiKey: string,
-  nounce: any
+  nounce: any,
+  context: string
 ) {
-
   // Generate the idempotency key
-  const KeyTx = nounce.toString()
+  const KeyTx = nounce.toString();
 
   try {
     //generate new dempotency key with hash of request
@@ -24,7 +21,7 @@ export async function fetchQueryResponse(
 
     let bodyContent = JSON.stringify({
       prompt: sms,
-      context: "",
+      context: context,
     });
 
     let response = await fetch("https://blueband-db-442d8.web.app/api/query", {
