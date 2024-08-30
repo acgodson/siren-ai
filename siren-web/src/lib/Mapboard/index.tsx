@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -59,9 +59,9 @@ function Mapboard() {
   const { isAccountModalOpen, toggleAccountModal, handleLogout } =
     useEthContext();
 
-  const [fromlocation, setFromLocation] = useState<any>("");
-  // const [tolocation, setToLocation] = useState<any>("");
+  const [location, setLocation] = useState<any>(null);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
 
   useEffect(() => {
     const geocoderElement = document.getElementById("geocoder");
@@ -80,7 +80,7 @@ function Mapboard() {
       if (geocoderElement) {
         const geocoder = new MapboxGeocoder({
           accessToken: mapboxToken as string,
-          types: "country,region,place,postcode,locality,neighborhood",
+          types: "country,region,place,postcode,locality,neighborhood,address",
           getItemValue: (x: any) => x.address,
         });
 
@@ -88,16 +88,31 @@ function Mapboard() {
           geocoder.addTo("#geocoder");
         }
 
+        // geocoder.on("result", (e: any) => {
+        //   if (e && e.result) {
+        //     console.log("resulting", e.result);
+        //     setLocation(e.result);
+        //     return geocoderElement?.remove();
+        //   }
+        // });
+
         geocoder.on("result", (e: any) => {
           if (e && e.result) {
-            console.log("resulting", e.result);
-            setFromLocation(e.result);
-            return geocoderElement?.remove();
+            setLocation(e.result);
+            setShowAutocomplete(false);
+
+            // Update map location
+            if (mapRef.current) {
+              mapRef.current.flyTo({
+                center: e.result.center,
+                zoom: 12,
+              });
+            }
           }
         });
 
         geocoder.on("clear", () => {
-          setFromLocation("");
+          setLocation("");
         });
       }
     }
@@ -172,36 +187,52 @@ function Mapboard() {
           ],
         },
       });
+
+      // Reverse geocode the initial coordinates
+      fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/-2.597298,51.453802.json?access_token=${mapboxToken}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.features && data.features.length > 0) {
+            setLocation(data.features[0]);
+          }
+        });
     });
+
+    mapRef.current = map;
 
     return () => map.remove();
   }, [mapboxToken]);
 
   useEffect(() => {
-    console.log(showAutocomplete);
+    console.log(location);
   }, [showAutocomplete]);
 
   return (
     <DashboardWrapper
       items={[
-        <Box w="100%" position={"relative"} mb={3}>
+        <Box w="100%" position={"relative"} mb={6}>
+          <Heading
+            textAlign={"center"}
+            size={["lg", "lg", "lg", "lg"]}
+            color="#020202"
+            fontWeight={"semibold"}
+            mb={3}
+          >
+            Toggle location
+          </Heading>
           <Input
             w="100%"
             id="result"
             position={"relative"}
-            placeholder="From Location"
+            placeholder="Map around Location"
             type="text"
-            value={fromlocation ? fromlocation.place_name : ""}
+            value={location ? location.place_name : ""}
             isReadOnly={true}
             onClick={() => setShowAutocomplete(!showAutocomplete)}
             required
           />
-          {fromlocation.place_name && (
-            <PenToolIcon
-              style={{ cursor: "pointer" }}
-              onClick={() => setShowAutocomplete(!showAutocomplete)}
-            />
-          )}
           {showAutocomplete && (
             <Box id="suggestion" bg="white">
               <Box
@@ -215,10 +246,9 @@ function Mapboard() {
             </Box>
           )}
         </Box>,
-
-        <InputGroup key="1" mb={4}>
-          <Input placeholder="To" />
-        </InputGroup>,
+        // <InputGroup key="1" mb={4}>
+        //   <Input placeholder="To" />
+        // </InputGroup>,
         <Button
           h="45px"
           px={4}

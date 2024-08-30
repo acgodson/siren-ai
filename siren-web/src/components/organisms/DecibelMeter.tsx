@@ -101,9 +101,9 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
       }
 
       // Upload object
-      // log("Uploading location data to Greenfield");
-      // await uploadJsonObject(objectName, finalLocationData);
-      // log("Data uploaded successfully");
+      log("Uploading location data to Greenfield");
+      await uploadJsonObject(objectName, finalLocationData);
+      log("Data uploaded successfully");
 
       // Assign points to the user
       log("Assigning points to user");

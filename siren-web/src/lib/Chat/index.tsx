@@ -7,6 +7,7 @@ import PromptCard from "@/components/molecules/prompt-card";
 import { PlaceholdersAndVanishInput } from "@/components/atoms/query-input";
 import { usePrivy } from "@privy-io/react-auth";
 import { useEthContext } from "@/evm/EthContext";
+import { useChat } from "@/hooks/useChat";
 
 interface Interaction {
   human_message: string;
@@ -26,41 +27,18 @@ const prompts = [
 const QueryInterface = () => {
   const { authenticated } = usePrivy();
   const { toggleAccountModal, handleLogin } = useEthContext();
-  const [interactions, setInteractions] = useState<Interaction[]>([]);
-  const [isFetching, setIsFetching] = useState(false);
-  const [currentInput, setCurrentInput] = useState("");
+  const {
+    interactions,
+    isFetching,
+    currentInput,
+    setCurrentInput,
+    handleSubmit,
+  } = useChat({ apiEndpoint: "/api/chat" });
 
   const placeholders = ["Hello?", "I have a question?", "What do you think?"];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentInput(e.target.value);
-  };
-
-  const getAIResponse = async (
-    input: string
-  ): Promise<Interaction["ai_message"] | null> => {
-    try {
-      let bodyContent = JSON.stringify({
-        prompt: input,
-      });
-
-      let response: any = await fetch("http://localhost:3000/api/chat", {
-        method: "POST",
-        body: bodyContent,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      let data = await response.json();
-      console.log(data);
-      if (data) {
-        return data;
-      }
-      return null;
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
   };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -70,29 +48,7 @@ const QueryInterface = () => {
       handleLogin();
       return;
     }
-    if (currentInput.trim() === "" || isFetching) return;
-    setIsFetching(true);
-    const placeHolderInteraction: Interaction = {
-      human_message: currentInput,
-      ai_message: null,
-    };
-    // Add the placeholder interaction
-    setInteractions((prevInteractions) => [
-      ...prevInteractions,
-      placeHolderInteraction,
-    ]);
-
-    const aiResponse = await getAIResponse(currentInput);
-    // Replace the last ai response that is null
-    setInteractions((prevInteractions) =>
-      prevInteractions.map((interaction, index) =>
-        index === prevInteractions.length - 1
-          ? { ...interaction, ai_message: aiResponse }
-          : interaction
-      )
-    );
-    setCurrentInput("");
-    setIsFetching(false);
+    handleSubmit(e);
   };
 
   return (

@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Box,
   Card,
@@ -16,34 +16,53 @@ import {
 import AppWrapper from "@/components/template/app-wrapper";
 
 import BearAvatar from "@/components/atoms/bear-avatar";
-import { usePrivy } from "@privy-io/react-auth";
+import { usePrivy, useWallets } from "@privy-io/react-auth";
 import { useEthContext } from "@/evm/EthContext";
+import { readContract } from "@/evm/config";
+import { formatEther } from "viem";
 
 function UserProfile() {
   const { user } = usePrivy();
+  const { wallets } = useWallets();
   const { handleLogin } = useEthContext();
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const [profile, setProfile] = useState<any | null>(null);
   const submitCallbackRef = useRef<(() => void) | null>(null);
+
+  const updateProfile = async () => {
+    if (wallets && wallets.length > 0) {
+      const [points, rewards, week]: string | null | any = await readContract(
+        "getUserStats",
+        [wallets[0].address, 1]
+      );
+
+      setProfile({
+        points: Number(points),
+        rewards: formatEther(rewards),
+        week: Number(week),
+      });
+      // console.log("user rewards", points);
+    }
+  };
 
   const statsItems = [
     {
-      title: "Total Rides",
+      title: "Total Rides Points",
       img: "/ph_bus-bold.png",
-      value: 0,
+      value: profile ? profile.points : 0,
     },
     {
       title: "Accumulated Rewards",
       img: "/rewards.png",
-      value: 0,
+      value: profile ? profile.rewards : 0,
     },
   ];
-  const handleDialogSubmit = async () => {
-    if (submitCallbackRef.current) {
-      submitCallbackRef.current();
+
+  useEffect(() => {
+    if (user) {
+      updateProfile();
     }
-    onClose();
-  };
+  }, [user]);
 
   return (
     <>
@@ -163,7 +182,7 @@ function UserProfile() {
                     />
                     <Text w="60px">
                       {item.value}
-                      {i === 0 ? " Rides" : " SRN"}
+                      {i === 0 ? "" : " SRN"}
                     </Text>
                   </HStack>
                 ))}
@@ -220,7 +239,7 @@ function UserProfile() {
                   <Image src="/solar_wallet-outline.png" h="30px" />
                 </Flex>
                 <Button
-                  h="51px"
+                  h="41px"
                   maxW="md"
                   bgGradient="linear(to-r, #D82B3C, #17101C)"
                   color="white"
@@ -260,7 +279,7 @@ function UserProfile() {
                 <Box>
                   <Button
                     isDisabled={true}
-                    h="51px"
+                    h="45px"
                     maxW="md"
                     bgGradient="linear(to-r, #D82B3C, #17101C)"
                     color="white"
@@ -284,12 +303,6 @@ function UserProfile() {
           </Stack>
         </VStack>
       </AppWrapper>
-
-      {/* <HowToMeasureDialog
-        isOpen={isOpen}
-        onClose={onClose}
-        onSubmit={handleDialogSubmit}
-      /> */}
     </>
   );
 }
