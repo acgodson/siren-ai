@@ -9,11 +9,6 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useEthContext } from "@/evm/EthContext";
 import { useChat } from "@/hooks/useChat";
 
-interface Interaction {
-  human_message: string;
-  ai_message: string | null;
-}
-
 const prompts = [
   { text: "How loud is my location?", bgColor: "orange.400" },
   {

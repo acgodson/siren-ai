@@ -15,11 +15,13 @@ import { usePrivy } from "@privy-io/react-auth";
 
 import { useEthContext } from "../../evm/EthContext";
 import Header from "@/components/organisms/header";
+import { useRouter } from "next/navigation";
 
 function Welcome() {
-  const { handleLogin, toggleAccountModal } = useEthContext();
-
-
+  const { handleLogin, toggleAccountModal, isAccountModalOpen } =
+    useEthContext();
+  const { authenticated, user } = usePrivy();
+  const router = useRouter();
 
   const features = [
     {
@@ -70,6 +72,15 @@ Benefit form user-contributed routes and noise data.`,
       action: "Ask AI",
     },
   ];
+
+  const getStarted = async () => {
+    if (authenticated || user) {
+      router.push("/home");
+    } else {
+      handleLogin();
+    }
+    router.push("/home");
+  };
 
   return (
     <>
@@ -122,8 +133,8 @@ Benefit form user-contributed routes and noise data.`,
                     bgGradient: "linear(to-r, #17101C, #D82B3C)",
                   }}
                   px={[3, 3, 12]}
-                  zIndex={[1,1,"tooltip"]}
-                  onClick={handleLogin}
+                  zIndex={[1, 1, isAccountModalOpen ? 0 : "tooltip"]}
+                  onClick={getStarted}
                   rightIcon={<img src="/measuring.png" alt="measuring" />}
                 >
                   Start Measuring
@@ -264,7 +275,7 @@ Benefit form user-contributed routes and noise data.`,
                       bgGradient: "linear(to-r, #17101C, #D82B3C)",
                     }}
                     w="fit-content"
-                    onClick={handleLogin}
+                    onClick={getStarted}
                     rightIcon={<img src={`/${x.icon}`} alt="measuring" />}
                   >
                     {x.action}
