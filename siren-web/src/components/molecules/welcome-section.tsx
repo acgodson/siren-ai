@@ -148,6 +148,7 @@ const WelcomeContent = () => {
                     <span>
                       Launching on
                       <span className="font-bold bg-gradient-to-r from-red-600 to-gray-900 bg-clip-text text-transparent">
+                        {" "}
                         Feb 13 2025
                       </span>
                     </span>
