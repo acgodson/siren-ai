@@ -10,6 +10,15 @@ const generateSlug = customAlphabet(
 
 export const appRouter = createTRPCRouter({
   getProfile: baseProcedure.query(async () => {}),
+  getRoadData: baseProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      return null;
+    }),
 });
 
 // export type definition of API
