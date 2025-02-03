@@ -6,9 +6,9 @@ import {
   Center,
   Heading,
   Input,
-  InputGroup,
+  // InputGroup,
 } from "@chakra-ui/react";
-import { PenToolIcon } from "lucide-react";
+// import { PenToolIcon } from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import {
@@ -318,7 +318,7 @@ function Mapboard() {
       </LayoutContent>
 
       <LayoutFooter>
-        <p>&copy; 2024 Siren</p>
+        <p>&copy; 2025 Siren</p>
       </LayoutFooter>
     </DashboardWrapper>
   );

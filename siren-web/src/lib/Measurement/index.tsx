@@ -19,7 +19,6 @@ function Dashboard() {
   return (
     <>
       <AppWrapper>
-        
         <VStack
           mt={12}
           w="100%"
@@ -29,6 +28,8 @@ function Dashboard() {
           <DecibelMeter showTip={onOpen} actionRef={submitCallbackRef} />
         </VStack>
       </AppWrapper>
+
+      
       <HowToMeasureDialog
         isOpen={isOpen}
         onClose={onClose}

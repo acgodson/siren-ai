@@ -6,6 +6,7 @@ import {
   HStack,
   useDisclosure,
   useToast,
+  Image,
 } from "@chakra-ui/react";
 import DecibelDisplay from "../molecules/DecibelDisplay";
 import { useDecibelMeter } from "@/hooks/useDecibelMeter";
@@ -51,6 +52,7 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
     stopTracking,
   } = useGPSTracking();
 
+  //Disabled on Testnet
   const { generateProof, verifyProof } = useNoirCircuit();
 
   const { uploadJsonObject, downloadJsonObject } = useGreenfield();
@@ -209,7 +211,20 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
           fontSize={["xl", "2xl", "3xl"]}
           fontWeight="bold"
         >
-          {isRecording ? "Measuring Decibels" : "Noise Measurement"}
+          {isRecording && "Measuring Decibels"}
+          {!isRecording && (
+            <div className="w-full flex justify-center">
+              <Image
+                className="mt-0 opacity-100"
+                h={["20px", "20px", "30px"]}
+                alt="zercom-logo"
+                src={"/vercel.png"}
+                style={{
+                  width: "auto",
+                }}
+              />
+            </div>
+          )}
         </Text>
       </Box>
 

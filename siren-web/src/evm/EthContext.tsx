@@ -9,6 +9,7 @@ import { ConnectedWallet, usePrivy, useWallets } from "@privy-io/react-auth";
 
 import { createPublicClient, http } from "viem";
 import { baseSepolia } from "viem/chains";
+import { useToast } from "@chakra-ui/react";
 
 interface EthContextType {
   index: number;
@@ -34,10 +35,17 @@ export const Erc4337Provider: React.FC<{ children: ReactNode }> = ({
   const [network, switchNetwork] = useState<any | null>(baseSepolia);
   const [address, setAddress] = useState<`0x${string}` | null>(null);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
+  const toast = useToast();
 
   const toggleAccountModal = () => setIsAccountModalOpen(!isAccountModalOpen);
 
   const handleLogin = async () => {
+    toast({
+      title: "Timeout",
+      description: "Network unavailable. Pleaae Try again shortly",
+      status: "warning",
+    });
+    return;
     try {
       if (authenticated) {
         await logout();

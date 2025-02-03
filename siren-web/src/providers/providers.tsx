@@ -10,6 +10,7 @@ import { Erc4337Provider } from "@/evm/EthContext";
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const privyAppId = "";
   return (
     <PrivyProvider
       appId={"cm09c0kux05vl7269wln6qrff"}
