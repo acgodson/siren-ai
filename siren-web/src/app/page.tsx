@@ -1,6 +1,7 @@
-import Dashboard from "@/lib/Measurement";
+"use client";
+
 import Welcome from "@/lib/Welcome";
 
 export default function App() {
-  return <Welcome />; //  <Dashboard />;
+  return <Welcome />;
 }
