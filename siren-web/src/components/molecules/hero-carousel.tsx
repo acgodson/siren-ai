@@ -54,7 +54,7 @@ const HeroCarousel = () => {
     {
       title: "Secure Sensory Data Framework",
       subtitle:
-        "From hardwaresensors to survelliance feeds, securely store IoT data on-chain for tamper-proof records and immutable trails on low-cost infastructure",
+        "From hardware sensors to survelliance feeds, securely store IoT data on-chain for tamper-proof records and immutable trails on low-cost infastructure",
       cta: {
         primary: {
           text: "Request Demo",
