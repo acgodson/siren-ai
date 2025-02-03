@@ -146,8 +146,10 @@ const WelcomeContent = () => {
                   <div className="flex items-center gap-2 text-gray-600">
                     <Coins className="w-5 h-5" />
                     <span>
-                      Tokenomics launching{" "}
-                      <span className="bold">Feb 13 2025</span>
+                      Launching on
+                      <span className="font-bold bg-gradient-to-r from-red-600 to-gray-900 bg-clip-text text-transparent">
+                        Feb 13 2025
+                      </span>
                     </span>
                   </div>
                 </div>
