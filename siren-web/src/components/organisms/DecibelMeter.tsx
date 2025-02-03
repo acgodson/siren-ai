@@ -54,9 +54,7 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
 
   //Disabled on Testnet
   const { generateProof, verifyProof } = useNoirCircuit();
-
   const { uploadJsonObject, downloadJsonObject } = useGreenfield();
-
   const { wallets } = useWallets();
   const { handleLogin } = useEthContext();
   const router = useRouter();
@@ -288,6 +286,7 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({ showTip, actionRef }) => {
           borderRadius="full"
           py={2}
           rightIcon={<img src="/measuring.png" alt="measure" />}
+          isDisabled={true}
         >
           {isPaused && finalStats
             ? "Claim Points"

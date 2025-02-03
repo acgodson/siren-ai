@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 const openGraphImage = {
   images: [
     {
-      url: "https://siren.network/bus.svg",
+      url: "https://sirenwatch.xyz/bus.jpg",
       width: 1200,
       height: 630,
       alt: "Siren - Decentralized Data Infrastructure",
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     description:
       "Building the largest decentralized sensor network on BNB Greenfield. Contribute environmental data, earn rewards, and drive community-powered insights.",
     creator: "@Siren_watch",
-    images: ["https://sirenwatch.xyz/bus.svg"],
+    images: ["https://sirenwatch.xyz/bus.jpg"],
   },
   viewport: {
     width: "device-width",

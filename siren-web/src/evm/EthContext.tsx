@@ -16,6 +16,7 @@ interface EthContextType {
   address: `0x${string}` | null;
   isAccountModalOpen: boolean;
   network: any;
+  isLoggingIn: boolean;
   switchNetwork: (index: number) => void;
   toggleAccountModal: () => void;
   handleLogin: () => void;
@@ -35,16 +36,21 @@ export const Erc4337Provider: React.FC<{ children: ReactNode }> = ({
   const [network, switchNetwork] = useState<any | null>(baseSepolia);
   const [address, setAddress] = useState<`0x${string}` | null>(null);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const toast = useToast();
 
   const toggleAccountModal = () => setIsAccountModalOpen(!isAccountModalOpen);
 
   const handleLogin = async () => {
-    toast({
-      title: "Timeout",
-      description: "Network unavailable. Pleaae Try again shortly",
-      status: "warning",
-    });
+    setIsLoggingIn(true);
+    setTimeout(() => {
+      setIsLoggingIn(false);
+      toast({
+        title: "Timeout",
+        description: "Network unavailable. Pleaae Try again shortly",
+        status: "warning",
+      });
+    }, 2500);
     return;
     try {
       if (authenticated) {
@@ -79,6 +85,7 @@ export const Erc4337Provider: React.FC<{ children: ReactNode }> = ({
         address,
         network,
         publicClient,
+        isLoggingIn,
         isAccountModalOpen,
         toggleAccountModal,
         handleLogin,

@@ -7,7 +7,7 @@ import ChatDialog from "../molecules/chat-dialog";
 import NavDrawer from "../molecules/nav-drawer";
 
 const Header = ({ className }: { className?: string }) => {
-  const { handleLogin } = useEthContext();
+  const { handleLogin, isLoggingIn } = useEthContext();
   const { address } = useAccount();
   const { toggleAccountModal } = useEthContext();
 
@@ -119,6 +119,7 @@ const Header = ({ className }: { className?: string }) => {
               _hover={{
                 bgGradient: "linear(to-r, #17101C, #D82B3C)",
               }}
+              isLoading={isLoggingIn}
               onClick={handleLogin}
             >
               Login
