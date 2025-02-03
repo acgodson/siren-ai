@@ -12,7 +12,7 @@ const Footer = () => {
           {/* Social Links */}
           <div className="flex items-center gap-6 mb-6">
             <a
-              href="https://twitter.com"
+              href="https://x.com/Siren_watch"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-600 hover:text-gray-900 transition-colors"
@@ -20,7 +20,7 @@ const Footer = () => {
               <Twitter className="w-6 h-6" />
             </a>
             <a
-              href="https://discord.com"
+              href="https://discord.gg/Qqyq487Kc4"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-600 hover:text-gray-900 transition-colors"
