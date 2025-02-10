@@ -25,6 +25,7 @@ const HeroCarousel = () => {
         primary: {
           text: "Start Measuring",
           icon: "/measuring.png",
+          url: "https://example.com/measuring",
         },
       },
       image: "/bus.svg",
@@ -35,15 +36,17 @@ const HeroCarousel = () => {
     {
       title: "Transform your Farm records for Rewards",
       subtitle:
-        "Log  your livestock health status securely on chain. Survelliance and early detection means better care and higher yields for livestocks in our regions",
+        "Log your livestock health status securely on chain. Survelliance and early detection means better care and higher yields for livestocks in our regions",
       cta: {
         primary: {
           text: "Early Access",
           icon: null,
+          url: "#",
         },
         secondary: {
           text: "Watch Demo",
           icon: <Play className="w-4 h-4" />,
+          url: "#",
         },
       },
       image: "/piggy.png",
@@ -57,8 +60,9 @@ const HeroCarousel = () => {
         "From hardware sensors to survelliance feeds, securely store IoT data on-chain for tamper-proof records and immutable trails on low-cost infastructure",
       cta: {
         primary: {
-          text: "Request Demo",
+          text: "Get Started",
           icon: null,
+          url: "http://medusa.sirenwatch.xyz/",
         },
       },
       image: "/noise.png",
@@ -111,7 +115,10 @@ const HeroCarousel = () => {
                   {slide.subtitle}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <button
+                  <a
+                    href={slide.cta.primary.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`px-8 py-3 rounded-full bg-gradient-to-r ${slide.buttonBg} text-white font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5`}
                   >
                     {slide.cta.primary.text}
@@ -122,9 +129,12 @@ const HeroCarousel = () => {
                         className="w-5 h-5"
                       />
                     )}
-                  </button>
+                  </a>
                   {slide.cta.secondary && (
-                    <button
+                    <a
+                      href={slide.cta.secondary.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className={`px-8 py-3 rounded-full border-2 font-medium flex items-center justify-center gap-2 transition-all duration-300 hover:bg-gray-50 
                         ${
                           index === 1
@@ -134,7 +144,7 @@ const HeroCarousel = () => {
                     >
                       {slide.cta.secondary.text}
                       {slide.cta.secondary.icon}
-                    </button>
+                    </a>
                   )}
                 </div>
               </div>
