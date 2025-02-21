@@ -128,6 +128,10 @@ export default function NavDrawer() {
             <Center className="mt-12">
               {!address && (
                 <Button
+                  as="a"
+                  href="https://medusa.sirenwatch.xyz"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   h="40px"
                   px={8}
                   fontSize="md"
@@ -137,7 +141,6 @@ export default function NavDrawer() {
                   _hover={{
                     bgGradient: "linear(to-r, #17101C, #D82B3C)",
                   }}
-                  onClick={handleLogin}
                 >
                   Login
                 </Button>

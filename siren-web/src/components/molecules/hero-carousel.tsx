@@ -9,7 +9,7 @@ const HeroCarousel = () => {
   React.useEffect(() => {
     const interval = setInterval(() => {
       if (!isPaused) {
-        setCurrentSlide((prev) => (prev + 1) % slides.length);
+        setCurrentSlide((prev: any) => (prev + 1) % slides.length);
       }
     }, 5000);
 
@@ -25,7 +25,7 @@ const HeroCarousel = () => {
         primary: {
           text: "Start Measuring",
           icon: "/measuring.png",
-          url: "https://example.com/measuring",
+          url: "https://medusa.sirenwatch.xyz/workflow/8954",
         },
       },
       image: "/bus.svg",

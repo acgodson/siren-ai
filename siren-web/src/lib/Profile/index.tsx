@@ -125,17 +125,19 @@ function UserProfile() {
                 {!user && (
                   <>
                     <Button
+                      as="a"
+                      href="https://medusa.sirenwatch.xyz"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       h="40px"
-                      px={12}
-                      fontSize={"lg"}
-                      borderRadius={"30px"}
+                      px={8}
+                      fontSize="md"
+                      borderRadius="full"
                       bgGradient="linear(to-r, #D82B3C, #17101C)"
                       color="white"
                       _hover={{
                         bgGradient: "linear(to-r, #17101C, #D82B3C)",
                       }}
-                      className="py-5 cursor-pointer"
-                      onClick={handleLogin}
                     >
                       Login
                     </Button>

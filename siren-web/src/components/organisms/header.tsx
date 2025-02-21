@@ -110,6 +110,10 @@ const Header = ({ className }: { className?: string }) => {
         <Box display={["none", "none", "block"]}>
           {!address ? (
             <Button
+              as="a"
+              href="https://medusa.sirenwatch.xyz"
+              target="_blank"
+              rel="noopener noreferrer"
               h="40px"
               px={8}
               fontSize="md"
@@ -119,8 +123,6 @@ const Header = ({ className }: { className?: string }) => {
               _hover={{
                 bgGradient: "linear(to-r, #17101C, #D82B3C)",
               }}
-              isLoading={isLoggingIn}
-              onClick={handleLogin}
             >
               Login
             </Button>
